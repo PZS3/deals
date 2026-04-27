@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+shirt_images/
+scraper.log
+test_color.py

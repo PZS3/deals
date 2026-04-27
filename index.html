@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deal Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --bg-raised: #080c14;
+    --card: #0d1117;
+    --card-hover: #131a24;
+    --surface: #161b22;
+    --border: #1a2030;
+    --border-glow: #2d3748;
+    --primary: #f97316;
+    --primary-dim: #c2410c;
+    --primary-glow: rgba(249,115,22,0.2);
+    --accent: #3b82f6;
+    --accent-glow: rgba(59,130,246,0.15);
+    --green: #22c55e;
+    --green-glow: rgba(34,197,94,0.15);
+    --red: #ef4444;
+    --yellow: #eab308;
+    --text: #f0f6fc;
+    --muted: #8b949e;
+    --dim: #484f58;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --glass: rgba(13,17,23,0.7);
+    --glass-border: rgba(255,255,255,0.06);
+    --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .filter-tab, .deal-brand, .deal-price, .stat-val, .store-tag, .brand-chip, .store-chip, .suits-btn, .refresh-btn, .sort-select, .color-badge, .stat-label, .deal-save, .deal-buy, .stars, .discount-badge {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(170deg, #000 0%, #0d1117 40%, #0c1222 70%, #0d1117 100%);
+    padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60%; left: 10%; width: 80%; height: 200%;
+    background: radial-gradient(ellipse at 50% 40%, rgba(249,115,22,0.06) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    position: relative;
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero-sub {
+    color: var(--muted);
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    position: relative;
+    margin-top: 0.25rem;
+    font-weight: 400;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 0.75rem);
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+    position: relative;
+  }
+  .stat-card {
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 0.6rem 1.4rem;
+    text-align: center;
+    min-width: 100px;
+  }
+  .stat-val {
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+  }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem clamp(0.75rem, 3vw, 1.25rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+  .filter-tab {
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--dim);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: all var(--transition);
+    user-select: none;
+  }
+  .filter-tab:hover { color: var(--muted); background: var(--surface); }
+  .filter-tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 16px var(--primary-glow);
+  }
+
+  .sort-select {
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-raised);
+    color: var(--muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  .sort-select:focus { outline: none; border-color: var(--primary); }
+  .sort-select option { background: var(--card); }
+
+  .suits-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--green);
+    background: transparent;
+    color: var(--green);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .suits-btn::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    opacity: 0.5;
+    transition: all var(--transition);
+  }
+  .suits-btn:hover { background: rgba(34,197,94,0.1); }
+  .suits-btn.active {
+    background: var(--green);
+    color: #000;
+    border-color: var(--green);
+    box-shadow: 0 0 20px var(--green-glow);
+  }
+  .suits-btn.active::before { background: #000; opacity: 1; }
+
+  .refresh-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .refresh-btn .refresh-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    line-height: 1;
+  }
+  .refresh-btn:not(.loading) .refresh-icon {
+    border: none;
+    width: auto; height: auto;
+  }
+  .refresh-btn:not(.loading) .refresh-icon::before { content: '\21BB'; font-size: 1rem; line-height: 1; }
+  .refresh-btn:hover { border-color: var(--primary); color: var(--text); }
+  .refresh-btn.loading {
+    border-color: var(--primary);
+    color: var(--primary);
+    pointer-events: none;
+  }
+  .refresh-btn.loading .refresh-icon {
+    border: 2px solid var(--primary);
+    border-top-color: transparent;
+    animation: spin 0.7s linear infinite;
+  }
+  .refresh-btn.loading .btn-text { animation: pulse-text 2s ease-in-out infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse-text { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .updated-text {
+    font-size: 0.7rem;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+
+  /* ===== BRAND + STORE BARS ===== */
+  .brand-bar, .store-bar {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.35rem clamp(0.75rem, 3vw, 1.25rem);
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+  .brand-chip, .store-chip {
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--dim);
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: all var(--transition);
+  }
+  .brand-chip:hover { border-color: var(--accent); color: var(--muted); }
+  .brand-chip.active {
+    background: rgba(59,130,246,0.12);
+    color: var(--accent);
+    border-color: rgba(59,130,246,0.25);
+  }
+  .store-chip:hover { border-color: var(--yellow); color: var(--muted); }
+  .store-chip.active {
+    background: rgba(234,179,8,0.1);
+    color: var(--yellow);
+    border-color: rgba(234,179,8,0.2);
+  }
+
+  /* ===== DEALS GRID ===== */
+  .deals-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem clamp(0.75rem, 3vw, 1.25rem) 3rem;
+  }
+
+  .deals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .deal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .deal-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  .deal-img-wrap {
+    position: relative;
+    background: #f3f4f6;
+    aspect-ratio: 1/1.15;
+    overflow: hidden;
+  }
+  .deal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.4rem;
+    transition: transform 0.35s ease;
+  }
+  .deal-card:hover .deal-img { transform: scale(1.04); }
+
+  .discount-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: var(--red);
+    color: #fff;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+  }
+
+  .store-tag {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .store-tag.myntra { background: #ff3f6c; color: #fff; }
+  .store-tag.ajio { background: #3e3e3e; color: #fff; }
+  .store-tag.amazon { background: #ff9900; color: #000; }
+  .store-tag.flipkart { background: #2874f0; color: #fff; }
+
+  .color-badge {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    backdrop-filter: blur(8px);
+  }
+  .color-badge.great { background: rgba(34,197,94,0.9); color: #fff; }
+  .color-badge.good { background: rgba(59,130,246,0.85); color: #fff; }
+  .color-badge.avoid { background: rgba(239,68,68,0.85); color: #fff; }
+
+  .deal-info {
+    padding: 0.75rem 0.85rem 0.85rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .deal-brand {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .deal-name {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .deal-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .deal-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -0.01em;
+  }
+  .deal-mrp {
+    font-size: 0.8rem;
+    color: var(--dim);
+    text-decoration: line-through;
+  }
+  .deal-save {
+    font-size: 0.7rem;
+    color: rgba(34,197,94,0.8);
+    font-weight: 600;
+  }
+
+  .deal-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+  }
+  .stars {
+    background: var(--yellow);
+    color: #000;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+  .rating-count {
+    font-size: 0.68rem;
+    color: var(--dim);
+  }
+
+  .deal-buy {
+    display: block;
+    text-align: center;
+    padding: 0.55rem;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: all var(--transition);
+    margin-top: auto;
+  }
+  .deal-buy:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 16px var(--primary-glow);
+  }
+
+  /* ===== EMPTY / LOADING ===== */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--dim);
+    grid-column: 1/-1;
+  }
+  .empty-state svg { width: 48px; height: 48px; margin-bottom: 1rem; color: var(--dim); }
+  .empty-state h3 { font-family: 'Rubik', sans-serif; font-size: 1.1rem; color: var(--muted); margin-bottom: 0.3rem; }
+
+  .loading-state { text-align: center; padding: 3rem; color: var(--muted); grid-column: 1/-1; }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 0.75rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 480px) {
+    .deals-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .deal-info { padding: 0.5rem 0.6rem 0.6rem; }
+    .deal-price { font-size: 1.1rem; }
+    .deal-name { font-size: 0.75rem; }
+    .filter-tab { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+    .hero { padding: 1.5rem 1rem; }
+    .hero h1 { font-size: 1.6rem; }
+  }
+  @media (min-width: 1400px) {
+    .deals-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .deal-price { font-size: 1.5rem; }
+    .filter-tab { font-size: 0.88rem; padding: 0.5rem 1rem; }
+  }
+  @media (min-width: 1920px) {
+    .deals-container { max-width: 1600px; }
+    .toolbar { max-width: 1600px; }
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+  ::selection { background: var(--primary); color: #fff; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Deal <span>Finder</span></h1>
+  <p class="hero-sub">Your brands. Your size. Best prices across Myntra & Ajio.</p>
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-val" id="totalDeals">--</div>
+      <div class="stat-label">Deals</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="bestDiscount">--</div>
+      <div class="stat-label">Best Off</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="lowestPrice">--</div>
+      <div class="stat-label">Lowest</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="storeCount">2</div>
+      <div class="stat-label">Stores</div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="filter-tabs">
+    <div class="filter-tab active" onclick="setCategory('all')">All</div>
+    <div class="filter-tab" onclick="setCategory('tshirt')">T-Shirts</div>
+    <div class="filter-tab" onclick="setCategory('shirt')">Shirts</div>
+    <div class="filter-tab" onclick="setCategory('jeans')">Jeans</div>
+    <div class="filter-tab" onclick="setCategory('trousers')">Trousers</div>
+    <div class="filter-tab" onclick="setCategory('shorts')">Shorts</div>
+    <div class="filter-tab" onclick="setCategory('jacket')">Jackets</div>
+    <div class="filter-tab" onclick="setCategory('trackpant')">Track Pants</div>
+    <div class="filter-tab" onclick="setCategory('shoes')">Shoes</div>
+  </div>
+  <select class="sort-select" onchange="setSort(this.value)">
+    <option value="best">Best for You</option>
+    <option value="discount">Discount %</option>
+    <option value="price-asc">Price: Low-High</option>
+    <option value="price-desc">Price: High-Low</option>
+    <option value="rating">Rating</option>
+  </select>
+  <button class="suits-btn" id="suitsBtn" onclick="toggleSuitsYou()">Suits You</button>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshDeals()"><span class="refresh-icon"></span><span class="btn-text">Refresh</span></button>
+  <span class="updated-text" id="updatedText"></span>
+</div>
+
+<div class="brand-bar" id="brandBar"></div>
+
+<div class="store-bar" id="storeBar">
+  <div class="store-chip active" onclick="toggleStore(this, 'all')">All Stores</div>
+  <div class="store-chip" onclick="toggleStore(this, 'Myntra')">Myntra</div>
+  <div class="store-chip" onclick="toggleStore(this, 'Ajio')">Ajio</div>
+</div>
+
+<div class="deals-container">
+  <div class="deals-grid" id="dealsGrid">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading deals...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let allDeals = [];
+  let currentCategory = 'all';
+  let currentSort = 'discount';
+  let currentBrand = 'all';
+  let currentStore = 'all';
+  let suitsYouOnly = false;
+
+  const COLOR_GREAT = ['navy','olive','mustard','burgundy','wine','maroon','forest green','dark green',
+    'teal','rust','burnt orange','chocolate','brown','white','cream','beige','ivory','emerald','coral',
+    'terracotta','charcoal','deep purple','aubergine','royal blue','camel','khaki','tan','gold','copper','black','dark grey'];
+  const COLOR_GOOD = ['grey','blue','green','orange','red','purple','yellow','indigo','peach','pink'];
+  const COLOR_AVOID = ['icy blue','baby blue','pastel pink','lavender','ash grey','neon','fluorescent',
+    'light pink','pale blue','silver','mauve'];
+
+  function getBestScore(deal) {
+    // Discount score (0-100): 30% off = 0, 90% off = 100
+    const discScore = Math.min(100, Math.max(0, (deal.discount_pct - 30) * (100 / 60)));
+    // Rating score (0-100): 4.0 = 50, 4.5 = 75, 5.0 = 100
+    const ratingScore = deal.rating > 0 ? Math.min(100, (deal.rating - 3.5) * (100 / 1.5)) : 40;
+    // Color match score: great=100, good=60, unknown=30, avoid=0
+    const cm = getColorMatch(deal);
+    const colorScore = cm.level === 'great' ? 100 : cm.level === 'good' ? 60 : cm.level === 'avoid' ? 0 : 30;
+    // Review count score (0-100): more reviews = more trustworthy
+    const rcScore = Math.min(100, (deal.rating_count / 50) * 100);
+    // Weighted: 35% discount + 25% rating + 25% color + 15% reviews
+    return (discScore * 0.35) + (ratingScore * 0.25) + (colorScore * 0.25) + (rcScore * 0.15);
+  }
+
+  function getColorMatch(deal) {
+    const colorText = ((deal.color || '') + ' ' + deal.name).toLowerCase();
+    for (const c of COLOR_AVOID) { if (colorText.includes(c)) return { level: 'avoid', label: 'Avoid' }; }
+    for (const c of COLOR_GREAT) { if (colorText.includes(c)) return { level: 'great', label: 'Suits You' }; }
+    for (const c of COLOR_GOOD) { if (colorText.includes(c)) return { level: 'good', label: 'Good Match' }; }
+    return { level: 'unknown', label: '' };
+  }
+
+  async function loadDeals() {
+    try {
+      const resp = await fetch('/api/deals?t=' + Date.now());
+      const data = await resp.json();
+      allDeals = data.deals || [];
+      updateStats(data);
+      renderDeals();
+      if (data.last_updated) {
+        const d = new Date(data.last_updated);
+        document.getElementById('updatedText').textContent =
+          'Updated ' + d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      }
+    } catch (e) {
+      document.getElementById('dealsGrid').innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <h3>No deals yet</h3>
+          <p>Click Refresh to scan stores</p>
+        </div>`;
+    }
+  }
+
+  function updateStats(data) {
+    const deals = data.deals || [];
+    document.getElementById('totalDeals').textContent = deals.length;
+    if (deals.length > 0) {
+      document.getElementById('bestDiscount').textContent = Math.max(...deals.map(d => d.discount_pct)) + '%';
+      document.getElementById('lowestPrice').textContent = '\u20B9' + Math.min(...deals.map(d => d.price)).toLocaleString('en-IN');
+    }
+    document.getElementById('storeCount').textContent = new Set(deals.map(d => d.store)).size || 2;
+  }
+
+  function updateBrandChips() {
+    let pool = allDeals;
+    if (currentCategory !== 'all') pool = pool.filter(d => d.category === currentCategory);
+    if (currentStore !== 'all') pool = pool.filter(d => d.store === currentStore);
+    const brandCounts = {};
+    pool.forEach(d => { brandCounts[d.brand] = (brandCounts[d.brand] || 0) + 1; });
+    const sorted = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]);
+    document.getElementById('brandBar').innerHTML =
+      `<div class="brand-chip ${currentBrand === 'all' ? 'active' : ''}" onclick="toggleBrand(this,'all')">All Brands (${pool.length})</div>` +
+      sorted.map(([b, c]) => `<div class="brand-chip ${currentBrand === b ? 'active' : ''}" onclick="toggleBrand(this,'${b}')">${b} (${c})</div>`).join('');
+  }
+
+  function renderDeals() {
+    updateBrandChips();
+    let filtered = allDeals;
+    if (currentCategory !== 'all') filtered = filtered.filter(d => d.category === currentCategory);
+    if (currentBrand !== 'all') filtered = filtered.filter(d => d.brand === currentBrand);
+    if (currentStore !== 'all') filtered = filtered.filter(d => d.store === currentStore);
+    if (suitsYouOnly) filtered = filtered.filter(d => getColorMatch(d).level === 'great');
+
+    switch (currentSort) {
+      case 'best':
+        // Combined score: 40% discount + 30% rating + 20% color match + 10% review count
+        filtered.sort((a, b) => {
+          const scoreA = getBestScore(a);
+          const scoreB = getBestScore(b);
+          return scoreB - scoreA;
+        });
+        break;
+      case 'discount': filtered.sort((a, b) => b.discount_pct - a.discount_pct); break;
+      case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
+      case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
+      case 'rating': filtered.sort((a, b) => b.rating - a.rating); break;
+    }
+
+    const grid = document.getElementById('dealsGrid');
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><h3>No deals match</h3><p>Adjust your filters</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(deal => {
+      const cm = getColorMatch(deal);
+      const colorBadge = cm.level !== 'unknown' ? `<div class="color-badge ${cm.level}">${cm.label}</div>` : '';
+      return `
+      <div class="deal-card" onclick="window.open(${deal.store === 'Ajio' ? `'https://www.ajio.com/search/?text=${encodeURIComponent(deal.brand + ' ' + deal.name)}'` : `'${deal.url}'`},'_blank')">
+        <div class="deal-img-wrap">
+          <img class="deal-img" src="${deal.image || ''}" alt="${deal.name}"
+               onerror="this.style.display='none'" loading="lazy">
+          <div class="discount-badge">${deal.discount_pct}% OFF</div>
+          <div class="store-tag ${deal.store.toLowerCase()}">${deal.store}</div>
+          ${colorBadge}
+        </div>
+        <div class="deal-info">
+          <div class="deal-brand">${deal.brand}</div>
+          <div class="deal-name">${deal.name}</div>
+          <div class="deal-pricing">
+            <span class="deal-price">\u20B9${deal.price.toLocaleString('en-IN')}</span>
+            <span class="deal-mrp">\u20B9${deal.mrp.toLocaleString('en-IN')}</span>
+          </div>
+          <div class="deal-save">Save \u20B9${(deal.mrp - deal.price).toLocaleString('en-IN')}</div>
+          ${deal.rating > 0 ? `<div class="deal-rating"><span class="stars">${deal.rating.toFixed(1)} \u2605</span><span class="rating-count">${deal.rating_count ? deal.rating_count.toLocaleString() : ''}</span></div>` : ''}
+          <a class="deal-buy" href="${deal.store === 'Ajio' ? 'https://www.ajio.com/search/?text=' + encodeURIComponent(deal.brand + ' ' + deal.name) : deal.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Buy on ${deal.store} \u2192</a>
+          ${deal.store === 'Ajio' ? '<div style="font-size:0.6rem;color:var(--dim);text-align:center;margin-top:0.25rem">Check size on site</div>' : '<div style="font-size:0.6rem;color:var(--green);text-align:center;margin-top:0.25rem">Size verified</div>'}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function setCategory(cat) {
+    currentCategory = cat;
+    currentBrand = 'all';
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderDeals();
+  }
+  function setSort(val) { currentSort = val; renderDeals(); }
+  function toggleBrand(el, brand) {
+    currentBrand = brand;
+    document.querySelectorAll('.brand-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderDeals();
+  }
+  function toggleSuitsYou() {
+    suitsYouOnly = !suitsYouOnly;
+    document.getElementById('suitsBtn').classList.toggle('active', suitsYouOnly);
+    renderDeals();
+  }
+  function toggleStore(el, store) {
+    currentStore = store;
+    currentBrand = 'all';
+    document.querySelectorAll('.store-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderDeals();
+  }
+
+  async function refreshDeals() {
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('loading');
+    btn.querySelector('.btn-text').textContent = 'Scanning';
+    try {
+      await fetch('/refresh', { method: 'POST' });
+      let attempts = 0;
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const resp = await fetch('/api/deals?t=' + Date.now());
+          const data = await resp.json();
+          if (data.deals && data.deals.length > 0) {
+            allDeals = data.deals;
+            updateStats(data);
+            renderDeals();
+            if (data.last_updated) {
+              const d = new Date(data.last_updated);
+              document.getElementById('updatedText').textContent =
+                'Updated ' + d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            }
+          }
+        } catch (e) {}
+        if (attempts >= 30) {
+          clearInterval(poll);
+          btn.classList.remove('loading');
+          btn.querySelector('.btn-text').textContent = 'Refresh';
+        }
+      }, 10000);
+      setTimeout(() => {
+        clearInterval(poll);
+        btn.classList.remove('loading');
+        btn.querySelector('.btn-text').textContent = 'Refresh';
+        loadDeals();
+      }, 180000);
+    } catch (e) {
+      btn.classList.remove('loading');
+      btn.querySelector('.btn-text').textContent = 'Refresh';
+    }
+  }
+
+  setInterval(() => {
+    if (!document.getElementById('refreshBtn').classList.contains('loading')) loadDeals();
+  }, 30000);
+
+  loadDeals();
+</script>
+</body>
+</html>
