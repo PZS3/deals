@@ -1,6 +1,6 @@
 {
   "last_updated": "2026-04-27T18:35:25.339107",
-  "total_deals": 1080,
+  "total_deals": 1073,
   "deals": [
     {
       "id": "myntra_254fc006",
@@ -2090,40 +2090,6 @@
       "rating_count": 24,
       "sizes_available": [],
       "scraped_at": "2026-04-27T18:31:50.212610"
-    },
-    {
-      "id": "ajio_ff3a916b",
-      "store": "Ajio",
-      "brand": "Marks & Spencer",
-      "name": "Women Glitter Relaxed Fit Round-Neck Top",
-      "category": "shirt",
-      "color": "469733023_silver",
-      "image": "https://assets.ajio.com/medias/sys_master/root/20250326/GLgM/67e40ac17a6cd4182f83dcda/-286Wx359H-469733023-silver-MODEL.jpg",
-      "url": "https://www.ajio.com/marks--spencer-women-glitter-relaxed-fit-round-neck-top/p/469733023_silver",
-      "mrp": 2999,
-      "price": 900,
-      "discount_pct": 70,
-      "rating": 0.0,
-      "rating_count": 0,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T18:31:50.212665"
-    },
-    {
-      "id": "ajio_2b38605a",
-      "store": "Ajio",
-      "brand": "Marks & Spencer",
-      "name": "Women Regular Fit Shirt",
-      "category": "shirt",
-      "color": "469592015_electricblue",
-      "image": "https://assets.ajio.com/medias/sys_master/root/20240124/o9kn/65b12b3916fd2c6e6abdec50/-286Wx359H-469592015-electricblue-MODEL.jpg",
-      "url": "https://www.ajio.com/marks--spencer-women-regular-fit-shirt/p/469592015_electricblue",
-      "mrp": 2999,
-      "price": 900,
-      "discount_pct": 70,
-      "rating": 4.0,
-      "rating_count": 13,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T18:31:50.212836"
     },
     {
       "id": "ajio_39033113",
@@ -5493,29 +5459,6 @@
       "scraped_at": "2026-04-27T18:34:42.135449"
     },
     {
-      "id": "myntra_5774d22f",
-      "store": "Myntra",
-      "brand": "Skechers",
-      "name": "Skechers GO WALK ARCH FIT - ORION Women Self Dresign Lace Ups Walking Shoes",
-      "category": "shoes",
-      "color": "black",
-      "image": "http://assets.myntassets.com/assets/images/2024/JULY/17/MgSGwItO_dcb8e0b9f42546dc9e55b2eebf22fa6a.jpg",
-      "url": "https://www.myntra.com/sports-shoes/skechers/skechers-go-walk-arch-fit---orion-women-self-dresign-lace-ups-walking-shoes/30230673/buy",
-      "mrp": 8999,
-      "price": 3599,
-      "discount_pct": 60,
-      "rating": 4.6,
-      "rating_count": 29,
-      "sizes_available": [
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "scraped_at": "2026-04-27T18:34:42.135461"
-    },
-    {
       "id": "myntra_30ff2e8a",
       "store": "Myntra",
       "brand": "Reebok",
@@ -8703,23 +8646,6 @@
         "XXL"
       ],
       "scraped_at": "2026-04-27T18:35:15.470421"
-    },
-    {
-      "id": "ajio_ec355d5a",
-      "store": "Ajio",
-      "brand": "Pepe Jeans",
-      "name": "Women Maiden Striped Comfort Fit Shirt",
-      "category": "shirt",
-      "color": "442405770_blue",
-      "image": "https://assets.ajio.com/medias/sys_master/root/20250103/w9Dr/677804f20f47f80c8736f898/-286Wx359H-442405770-blue-MODEL.jpg",
-      "url": "https://www.ajio.com/pepe-jeans-women-maiden-striped-comfort-fit-shirt/p/442405770_blue",
-      "mrp": 2399,
-      "price": 1080,
-      "discount_pct": 55,
-      "rating": 4.2,
-      "rating_count": 19,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T17:06:18.308382"
     },
     {
       "id": "ajio_400bb6b5",
@@ -15211,23 +15137,6 @@
       "scraped_at": "2026-04-27T18:31:16.897284"
     },
     {
-      "id": "ajio_d086d08b",
-      "store": "Ajio",
-      "brand": "Marks & Spencer",
-      "name": "Women Floral Print Relaxed Fit Cotton Top",
-      "category": "shirt",
-      "color": "469671697_greenmix",
-      "image": "https://assets.ajio.com/medias/sys_master/root/20240814/VAJ2/66bcc1561d763220fa7b2270/-286Wx359H-469671697-greenmix-MODEL.jpg",
-      "url": "https://www.ajio.com/marks--spencer-women-floral-print-relaxed-fit-cotton-top/p/469671697_greenmix",
-      "mrp": 2499,
-      "price": 1474,
-      "discount_pct": 41,
-      "rating": 4.1,
-      "rating_count": 35,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T18:31:50.212554"
-    },
-    {
       "id": "ajio_20a73b94",
       "store": "Ajio",
       "brand": "Flying Machine",
@@ -17829,23 +17738,6 @@
       "scraped_at": "2026-04-27T18:33:35.135534"
     },
     {
-      "id": "ajio_5552dfd5",
-      "store": "Ajio",
-      "brand": "Allen Solly",
-      "name": "Women Graphic Regular Fit T-Shirt",
-      "category": "shirt",
-      "color": "702057601_peach",
-      "image": "https://assets.ajio.com/medias/sys_master/root1/20250804/pShv/689096d58bfb9009ac59a9b0/-286Wx359H-702057601-peach-MODEL.jpg",
-      "url": "https://www.ajio.com/allen-solly-women-graphic-regular-fit-t-shirt/p/702057601_peach",
-      "mrp": 1099,
-      "price": 725,
-      "discount_pct": 34,
-      "rating": 0.0,
-      "rating_count": 0,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T17:05:11.450158"
-    },
-    {
       "id": "ajio_a654e4c4",
       "store": "Ajio",
       "brand": "Adidas",
@@ -19879,23 +19771,6 @@
       "rating_count": 0,
       "sizes_available": [],
       "scraped_at": "2026-04-27T18:33:23.036643"
-    },
-    {
-      "id": "ajio_a28fe70b",
-      "store": "Ajio",
-      "brand": "Under Armour",
-      "name": "Women Project Rock Heavy Weight Regular Fit Hoodie",
-      "category": "jacket",
-      "color": "469677338_black",
-      "image": "https://assets.ajio.com/medias/sys_master/root/20240902/3K3X/66d5becf1d763220fab81212/-286Wx359H-469677338-black-MODEL.jpg",
-      "url": "https://www.ajio.com/under-armour-women-project-rock-heavy-weight-regular-fit-hoodie/p/469677338_black",
-      "mrp": 8419,
-      "price": 5893,
-      "discount_pct": 30,
-      "rating": 0.0,
-      "rating_count": 0,
-      "sizes_available": [],
-      "scraped_at": "2026-04-27T18:33:23.036701"
     },
     {
       "id": "ajio_57773590",

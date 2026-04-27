@@ -449,10 +449,28 @@ def scrape_myntra(config):
 # ============================================================
 # MAIN
 # ============================================================
+WOMEN_KEYWORDS = ['women', 'woman', "women's", 'ladies', 'girls', 'girl', 'bra ', 'legging',
+    'kurti', 'saree', 'salwar', 'anarkali', 'lehenga', 'palazzo', 'skirt', 'crop top',
+    'maternity', 'nightgown', 'bikini', 'lingerie', ' her ', 'feminine', 'floral dress']
+
+def is_mens_product(deal):
+    """Filter out women's products that slipped through."""
+    name = deal.get("name", "").lower()
+    brand = deal.get("brand", "").lower()
+    # Skip furniture — no gender filter needed
+    if deal.get("category") == "furniture":
+        return True
+    for kw in WOMEN_KEYWORDS:
+        if kw in name:
+            return False
+    return True
+
 def deduplicate(deals):
     seen = {}
     unique = []
     for d in deals:
+        if not is_mens_product(d):
+            continue
         key = f"{d['brand'].lower()}_{d['name'].lower()[:50]}_{d['store']}"
         if key not in seen:
             seen[key] = True
