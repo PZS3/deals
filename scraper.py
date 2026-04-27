@@ -98,7 +98,12 @@ def scrape_ajio(config):
                    "van heusen shirt men", "arrow shirt men", "peter england shirt men",
                    "louis philippe shirt men", "indian terrain shirt men", "wrangler shirt men",
                    "pepe jeans shirt men", "gap shirt men", "benetton shirt men",
-                   "marks spencer shirt men", "celio shirt men", "flying machine shirt men"],
+                   "marks spencer shirt men", "celio shirt men", "flying machine shirt men",
+                   "men party wear shirt", "men formal shirt premium", "men linen shirt",
+                   "men printed shirt designer", "men occasion wear shirt",
+                   "selected homme shirt men", "jack jones premium shirt",
+                   "tommy hilfiger formal shirt", "van heusen party shirt",
+                   "louis philippe formal shirt", "arrow formal shirt men"],
         "jeans": ["levi jeans men", "us polo jeans men", "jack jones jeans men", "roadster jeans men"],
         "trousers": ["allen solly trousers men", "us polo trousers men", "jack jones trousers men"],
         "shorts": ["puma shorts men", "adidas shorts men", "nike shorts men", "reebok shorts men"],
@@ -279,6 +284,21 @@ def scrape_myntra(config):
             # Group 5: Puma, Adidas, Under Armour, Flying Machine, Selected Homme
             "https://www.myntra.com/men-shirts?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CFlying+Machine%2CSELECTED&sort=discount",
             "https://www.myntra.com/men-shirts?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CFlying+Machine%2CSELECTED&sort=discount&p=2",
+            # Group 6: Party/Occasion wear — premium brands
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount",
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount&p=2",
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CAllen+Solly%2CIndian+Terrain&sort=discount",
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CAllen+Solly%2CIndian+Terrain&sort=discount&p=2",
+            # Group 7: Formal shirts
+            "https://www.myntra.com/men-formal-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CPeter+England%2CAllen+Solly&sort=discount",
+            "https://www.myntra.com/men-formal-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CPeter+England%2CAllen+Solly&sort=discount&p=2",
+            "https://www.myntra.com/men-formal-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CPeter+England%2CAllen+Solly&sort=discount&p=3",
+            # Group 8: Printed/designer shirts
+            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein&sort=discount",
+            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein&sort=discount&p=2",
+            # Group 9: Linen shirts (premium, wedding-worthy)
+            "https://www.myntra.com/men-linen-shirts?f=Brand%3AMarks+%26+Spencer%2CAllen+Solly%2CVan+Heusen%2CLouis+Philippe%2CIndian+Terrain%2CJack+%26+Jones&sort=discount",
+            "https://www.myntra.com/men-linen-shirts?f=Brand%3AMarks+%26+Spencer%2CAllen+Solly%2CVan+Heusen%2CLouis+Philippe%2CIndian+Terrain%2CJack+%26+Jones&sort=discount&p=2",
         ],
         "jeans": [
             "https://www.myntra.com/men-jeans?f=Brand%3ALevi%2527s%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount",
