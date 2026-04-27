@@ -812,7 +812,11 @@
       <div class="deal-card" onclick="window.open(${deal.store === 'Ajio' ? `'https://www.ajio.com/search/?text=${encodeURIComponent(deal.brand + ' ' + deal.name)}'` : `'${deal.url}'`},'_blank')">
         <div class="deal-img-wrap">
           <img class="deal-img" src="${deal.image || ''}" alt="${deal.name}"
-               onerror="this.style.display='none'" loading="lazy">
+               onerror="this.onerror=null;this.src='';this.style.display='none';this.nextElementSibling.style.display='flex';" loading="lazy">
+          <div class="img-fallback" style="display:none;align-items:center;justify-content:center;height:100%;background:var(--surface);flex-direction:column;gap:0.4rem">
+            <div style="font-family:Inter;font-size:1.2rem;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:0.05em">${deal.store}</div>
+            <div style="font-size:0.7rem;color:var(--dim)">Tap to view product</div>
+          </div>
           <div class="discount-badge">${deal.discount_pct}% OFF</div>
           <div class="store-tag ${deal.store.toLowerCase()}">${deal.store}</div>
           ${colorBadge}
