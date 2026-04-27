@@ -622,7 +622,7 @@
 
   async function loadDeals() {
     try {
-      const resp = await fetch('/api/deals?t=' + Date.now());
+      const resp = await fetch('deals.json?t=' + Date.now());
       const data = await resp.json();
       allDeals = data.deals || [];
       updateStats(data);
@@ -753,12 +753,12 @@
     btn.classList.add('loading');
     btn.querySelector('.btn-text').textContent = 'Scanning';
     try {
-      await fetch('/refresh', { method: 'POST' });
+      // Refresh just reloads latest data (scraper runs via cron on Mac)
       let attempts = 0;
       const poll = setInterval(async () => {
         attempts++;
         try {
-          const resp = await fetch('/api/deals?t=' + Date.now());
+          const resp = await fetch('deals.json?t=' + Date.now());
           const data = await resp.json();
           if (data.deals && data.deals.length > 0) {
             allDeals = data.deals;
