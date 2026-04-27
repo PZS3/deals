@@ -574,6 +574,112 @@
   <div class="store-chip" onclick="toggleStore(this, 'Ajio')">Ajio</div>
 </div>
 
+<!-- COUPONS BAR -->
+<div class="coupons-bar" id="couponsBar">
+  <div class="coupons-header" onclick="toggleCoupons()">
+    <span class="coupons-title">Active Coupons</span>
+    <span class="coupons-toggle" id="couponsToggle">Show</span>
+  </div>
+  <div class="coupons-grid" id="couponsGrid" style="display:none"></div>
+</div>
+
+<style>
+  .coupons-bar {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.5rem clamp(0.75rem, 3vw, 1.25rem);
+  }
+  .coupons-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .coupons-header:hover { border-color: var(--primary); }
+  .coupons-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--primary);
+  }
+  .coupons-toggle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .coupons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .coupon-card {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .coupon-card:hover { border-color: var(--primary); background: var(--card-hover); }
+  .coupon-card.copied { border-color: var(--green); }
+  .coupon-code {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: var(--green);
+    background: rgba(34,197,94,0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: center;
+  }
+  .coupon-detail {
+    flex: 1;
+    min-width: 0;
+  }
+  .coupon-offer {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .coupon-meta {
+    font-size: 0.65rem;
+    color: var(--dim);
+  }
+  .coupon-store {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .coupon-store.myntra { background: #ff3f6c; color: #fff; }
+  .coupon-store.ajio { background: #3e3e3e; color: #fff; }
+  @media (max-width: 480px) {
+    .coupons-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
 <div class="deals-container">
   <div class="deals-grid" id="dealsGrid">
     <div class="loading-state">
@@ -792,6 +898,90 @@
   setInterval(() => {
     if (!document.getElementById('refreshBtn').classList.contains('loading')) loadDeals();
   }, 30000);
+
+  // ===== COUPONS =====
+  const COUPONS = [
+    // Myntra
+    {store:'Myntra',code:'STACKUP',offer:'Up to 70% + Rs 400-800 OFF',min:'Rs 2499+',category:'all'},
+    {store:'Myntra',code:'NORETURNX',offer:'Flat 15% OFF all users',min:'Rs 399+',category:'all'},
+    {store:'Myntra',code:'SPL10',offer:'70% + Extra 10% OFF',min:'No min',category:'all'},
+    {store:'Myntra',code:'FWD20',offer:'70% + Extra 20% OFF',min:'Rs 300+',category:'all'},
+    {store:'Myntra',code:'SPORTS20OFF',offer:'Flat 20% OFF sportswear',min:'Rs 799+',category:'tshirt'},
+    {store:'Myntra',code:'MYN10',offer:'70% + Extra 10% OFF',min:'Rs 1000+',category:'all'},
+    {store:'Myntra',code:'FTWFLASH',offer:'70% + 10% OFF footwear',min:'No min',category:'shoes'},
+    {store:'Myntra',code:'FTW15OFF',offer:'Flat 15% OFF footwear',min:'No min',category:'shoes'},
+    {store:'Myntra',code:'FOOTWEAR10',offer:'Flat 10% OFF footwear',min:'No min',category:'shoes'},
+    {store:'Myntra',code:'TRYJJ15',offer:'70% + 15% OFF Jack & Jones',min:'Rs 999+',category:'shirt'},
+    {store:'Myntra',code:'BASKETBONUS',offer:'Extra 20% OFF on 3+ items',min:'No min',category:'all'},
+    {store:'Myntra',code:'NOREASON10',offer:'Extra 10% OFF on 2+ items',min:'No min',category:'all'},
+    {store:'Myntra',code:'SPL15',offer:'Flat 15% OFF existing users',min:'Rs 1199+',category:'all'},
+    {store:'Myntra',code:'EXTRA50',offer:'Rs 50 OFF',min:'Rs 400+',category:'all'},
+    // Ajio
+    {store:'Ajio',code:'OGDEAL',offer:'80% + 10% OFF + 15% cashback',min:'Rs 999+',category:'all'},
+    {store:'Ajio',code:'SALE10',offer:'90% + Extra 10% OFF',min:'Rs 2190+',category:'all'},
+    {store:'Ajio',code:'ACTIVERUSH',offer:'Extra 10% OFF premium fashion',min:'Rs 899+',category:'all'},
+    {store:'Ajio',code:'NEW30',offer:'Flat 30% OFF + 15% cashback',min:'New users',category:'all'},
+    {store:'Ajio',code:'AJIOMANIAFLASH',offer:'80% + Rs 400 OFF',min:'Rs 2890+',category:'all'},
+    {store:'Ajio',code:'STEALDEAL',offer:'10% OFF (max Rs 1000)',min:'Rs 1500+',category:'all'},
+    {store:'Ajio',code:'MISSYOU',offer:'Extra up to Rs 500 OFF',min:'Rs 3490+',category:'all'},
+    {store:'Ajio',code:'HEATWAVE',offer:'Flat 15% OFF (max Rs 250)',min:'Rs 1490+',category:'all'},
+    {store:'Ajio',code:'SALE5',offer:'70% + 5% OFF + 15% cashback',min:'Rs 990+',category:'all'},
+    {store:'Ajio',code:'FREEDEL',offer:'Free shipping',min:'Rs 1199+',category:'all'},
+    {store:'Ajio',code:'CIRCLEPASS',offer:'Flat 22% OFF (max Rs 400)',min:'No min',category:'all'},
+  ];
+
+  function toggleCoupons() {
+    const grid = document.getElementById('couponsGrid');
+    const toggle = document.getElementById('couponsToggle');
+    if (grid.style.display === 'none') {
+      grid.style.display = 'grid';
+      toggle.textContent = 'Hide';
+      renderCoupons();
+    } else {
+      grid.style.display = 'none';
+      toggle.textContent = 'Show';
+    }
+  }
+
+  function renderCoupons() {
+    let filtered = COUPONS;
+    // Filter by current category if not 'all'
+    if (currentCategory !== 'all') {
+      filtered = filtered.filter(c => c.category === 'all' || c.category === currentCategory);
+    }
+    // Filter by current store if not 'all'
+    if (currentStore !== 'all') {
+      filtered = filtered.filter(c => c.store === currentStore);
+    }
+
+    document.getElementById('couponsGrid').innerHTML = filtered.map(c => `
+      <div class="coupon-card" onclick="copyCode('${c.code}', this)" title="Click to copy">
+        <div class="coupon-code">${c.code}</div>
+        <div class="coupon-detail">
+          <div class="coupon-offer">${c.offer}</div>
+          <div class="coupon-meta">Min: ${c.min}</div>
+        </div>
+        <span class="coupon-store ${c.store.toLowerCase()}">${c.store}</span>
+      </div>
+    `).join('');
+  }
+
+  function copyCode(code, el) {
+    navigator.clipboard.writeText(code).then(() => {
+      el.classList.add('copied');
+      el.querySelector('.coupon-code').textContent = 'Copied!';
+      setTimeout(() => {
+        el.classList.remove('copied');
+        el.querySelector('.coupon-code').textContent = code;
+      }, 1500);
+    });
+  }
+
+  // Re-render coupons when filters change
+  const origSetCategory = setCategory;
+  setCategory = function(cat) { origSetCategory(cat); if(document.getElementById('couponsGrid').style.display!=='none') renderCoupons(); };
+  const origToggleStore = toggleStore;
+  toggleStore = function(el, store) { origToggleStore(el, store); if(document.getElementById('couponsGrid').style.display!=='none') renderCoupons(); };
 
   loadDeals();
 </script>
