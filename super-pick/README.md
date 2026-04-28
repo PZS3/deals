@@ -1,4 +1,43 @@
-# Super Pick — State Files
+# Super Pick
+
+Personal AI wardrobe concierge. Runs in Claude Code (Claude Max), $0/month.
+
+## Layout
+
+```
+super-pick/
+  setup.sh              one-time symlink installer
+  README.md             this file
+  profile.json          your body, palette, fit/budget rules
+  wardrobe.json         what you own
+  taste.json            auto-summarised preferences
+  history.jsonl         append-only event log
+  skill/                source of the Claude Code skill
+    SKILL.md            the brain (auto-loads on shopping queries)
+    references/         scoring, gap analysis, vision checks, etc.
+```
+
+The `skill/` folder is symlinked into `~/.claude/skills/super-pick/` by `setup.sh`,
+so Claude Code finds it automatically.
+
+## First-time setup
+
+```bash
+cd ~/Desktop/Project\ Code/deals
+./super-pick/setup.sh
+```
+
+Then open Claude Code in this directory and ask a shopping question:
+
+```bash
+claude
+> find me a navy linen shirt under 2000
+```
+
+The skill auto-loads, reads your profile + wardrobe + deals, and replies with
+ranked picks.
+
+## State files
 
 These four files hold all of Super Pick's memory. Edit them carefully.
 
