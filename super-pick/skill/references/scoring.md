@@ -5,12 +5,13 @@ Each surviving candidate gets a 0–100 score. Sort descending, take top 5.
 ## Formula
 
 ```
-score =  0.40 * gap_score
+score =  0.35 * gap_score
        + 0.15 * discount_score
        + 0.15 * rating_score
        + 0.10 * color_match_score
        + 0.15 * taste_score
        + 0.05 * body_friendliness_score
+       + 0.05 * store_score
 ```
 
 ## Sub-scores (each 0–100)
@@ -103,6 +104,28 @@ taste_score = max(0, min(100, taste_score))
 ```
 
 If taste.json is fresh/empty (no events logged yet), taste_score = 50 for everyone (neutral).
+
+### store_score
+
+Read `profile.store_preference`. Myntra delivers within 2-3 days to Vijayawada;
+Ajio takes 7-10 days and is often delayed.
+
+```
+if deal.store in profile.store_preference.preferred:   100
+elif deal.store in profile.store_preference.tolerated: 40
+else:                                                  60   # unknown store
+```
+
+**Hard tiebreak rule:** when comparing a Myntra deal vs an Ajio deal, the Ajio
+deal must beat the Myntra deal's price by at least
+`profile.store_preference.ajio_must_beat_myntra_by_pct` (default 20%) to even
+be considered. Otherwise drop the Ajio one in favour of Myntra. Apply this in
+Step 4 BEFORE final ranking.
+
+Example:
+- Myntra: same shirt at ₹1,200
+- Ajio: same shirt at ₹1,000 (16% cheaper) → drop Ajio (didn't beat by 20%)
+- Ajio: same shirt at ₹950 (21% cheaper) → keep both, let scoring decide
 
 ### body_friendliness_score
 

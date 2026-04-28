@@ -513,17 +513,17 @@ def run_scraper():
     config = load_config()
     all_deals = []
 
-    # Ajio — curl-cffi search page scraping
-    try:
-        all_deals.extend(scrape_ajio(config))
-    except Exception as e:
-        log.error(f"[Ajio] Crashed: {e}")
-
-    # Myntra — embedded JSON
+    # Myntra FIRST — preferred store (faster delivery in Vijayawada)
     try:
         all_deals.extend(scrape_myntra(config))
     except Exception as e:
         log.error(f"[Myntra] Crashed: {e}")
+
+    # Ajio second — slower delivery, used as backup/variety
+    try:
+        all_deals.extend(scrape_ajio(config))
+    except Exception as e:
+        log.error(f"[Ajio] Crashed: {e}")
 
     all_deals = deduplicate(all_deals)
     all_deals.sort(key=lambda x: x["discount_pct"], reverse=True)

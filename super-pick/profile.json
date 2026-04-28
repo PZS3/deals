@@ -97,5 +97,12 @@
     "primary": "wardrobe_gap",
     "secondary": "discount",
     "tertiary": "rating"
+  },
+  "store_preference": {
+    "preferred": ["Myntra"],
+    "tolerated": ["Ajio"],
+    "rationale": "Myntra delivers within 2-3 days to Vijayawada. Ajio takes 7-10 days, often delayed.",
+    "tiebreak_bonus": 15,
+    "ajio_must_beat_myntra_by_pct": 20
   }
 }

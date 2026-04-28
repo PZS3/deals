@@ -66,18 +66,20 @@ Read `references/hard-rules.md`. Apply these eliminations on `deals.json` candid
 - **Wardrobe duplicate**: if a near-identical item already exists in `wardrobe.json` (same brand AND same color family AND same pattern AND same category) → drop and remember the wd_id to mention in reply
 - **Wrong category**: deal.category != intent.category → drop
 - **Hot-month fabric**: if current month is in `profile.climate.hot_months` AND deal mentions a fabric in `profile.climate.fabric_avoid_when_hot` → drop
+- **Ajio price gate**: when comparing similar items across stores, drop Ajio candidates that don't beat the closest Myntra candidate by at least `profile.store_preference.ajio_must_beat_myntra_by_pct` (default 20%). Reason: Ajio delivery to Vijayawada is 7-10 days vs Myntra 2-3 — only worth waiting if savings are large.
 - **Stale data**: if `deals.json` `last_updated` is more than 24 hours old, prepend a warning to your reply but still continue
 
 ### Step 4 — Score remaining candidates
 
 Read `references/scoring.md` for the formula. Score each on 0–100 across:
 
-- **Wardrobe gap (40%)** — does this fill a missing color/pattern/fabric/category in wardrobe.json?
+- **Wardrobe gap (35%)** — does this fill a missing color/pattern/fabric/category in wardrobe.json?
 - **Discount (15%)** — `(discount_pct − 30) × 100/60`, capped at 100
 - **Rating + reviews (15%)** — rating × 20, plus log scaling for review count
 - **Color match (10%)** — `great=100, good=60, unknown=30, avoid=already_dropped`
 - **Taste affinity (15%)** — matches `taste.summary.loved_colors`, `favorite_brands`, `preferred_patterns`, `preferred_fabrics`
 - **Body friendliness (5%)** — regular/relaxed fit + dark solid bonus
+- **Store preference (5%)** — Myntra=100, Ajio=40 (faster delivery wins ties)
 
 Sum, sort descending, take top 5.
 
