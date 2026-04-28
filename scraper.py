@@ -433,7 +433,15 @@ def scrape_myntra(config):
                     else:
                         sizes = []
 
-                    if cat_conf["size"] not in sizes and sizes:
+                    # Size check: L = 40/42 for shirts, L for tshirts, 10/UK10 for shoes, 34 for pants
+                    target_size = cat_conf["size"]
+                    size_aliases = {
+                        "L": ["L", "l", "40", "42", "Large"],
+                        "34": ["34", "32-34", "34-36"],
+                        "10": ["10", "UK10", "UK 10", "10UK"],
+                    }
+                    valid_sizes = size_aliases.get(target_size, [target_size])
+                    if sizes and not any(s.strip() in valid_sizes for s in sizes):
                         continue
 
                     # Color
