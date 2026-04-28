@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "owner": "Prazwal",
+  "updated_at": "2026-04-28",
+  "physical": {
+    "height_cm": 170,
+    "weight_kg": 92,
+    "bmi": 32.7,
+    "build": "stocky",
+    "skin_tone": "deep",
+    "undertone": "warm-golden",
+    "notes": "BMI in obese class I. Slim/skinny fits will pull and gap. Need regular/tailored/relaxed. Dark solids slim visually."
+  },
+  "sizes": {
+    "shirt": ["XL", "XXL"],
+    "tshirt": "XL",
+    "trousers": "36",
+    "jeans": "36",
+    "shorts": "L",
+    "shoes_uk": "10",
+    "shoes_eu": "44"
+  },
+  "climate": {
+    "city": "Vijayawada",
+    "country": "India",
+    "hot_months": ["Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+    "mild_months": ["Nov", "Feb"],
+    "cool_months": ["Dec", "Jan"],
+    "fabric_avoid_when_hot": ["wool", "heavy_canvas", "fleece", "thick_corduroy", "leather_jacket"],
+    "fabric_prefer_when_hot": ["cotton", "linen", "cotton_linen_blend", "rayon", "viscose"]
+  },
+  "color_palette": {
+    "season": "Deep Autumn",
+    "rationale": "Dark complexion + warm golden undertone. Earthy/jewel/dark tones suit. Pastels/icy/silvery wash out skin.",
+    "great": [
+      "navy", "navy blue", "dark navy",
+      "olive", "dark olive", "military green",
+      "maroon", "burgundy", "wine", "dark red", "mahogany",
+      "teal", "dark teal", "petrol blue",
+      "forest green", "dark green", "emerald", "bottle green",
+      "charcoal", "dark grey", "graphite", "steel grey",
+      "rust", "burnt orange", "terracotta", "brick",
+      "mustard", "dark yellow", "ochre",
+      "chocolate", "dark brown", "coffee", "espresso", "brown",
+      "black", "jet black",
+      "white", "off white", "cream", "ivory",
+      "camel", "khaki", "tan", "beige", "sand",
+      "deep purple", "aubergine", "plum", "dark purple",
+      "royal blue", "cobalt", "indigo", "dark blue",
+      "copper", "bronze", "gold"
+    ],
+    "good": [
+      "grey", "green", "blue", "red", "orange", "purple", "yellow", "multi"
+    ],
+    "avoid": [
+      "icy blue", "baby blue", "sky blue", "light blue", "powder blue",
+      "pastel pink", "light pink", "blush", "rose", "baby pink",
+      "lavender", "lilac", "mauve",
+      "ash grey", "light grey", "pale grey", "silver",
+      "neon", "fluorescent", "lime green", "hot pink",
+      "peach", "coral pink", "salmon",
+      "mint", "aqua"
+    ]
+  },
+  "fit_rules": {
+    "preferred": ["regular", "tailored", "relaxed", "comfort", "classic"],
+    "avoid": ["slim", "skinny", "very_tight", "muscle_fit", "extra_slim", "super_slim"],
+    "rationale": "BMI 32.7. Slim fit pulls across chest/belly, button gapping, side-profile bulge. Regular or tailored sits cleanly."
+  },
+  "pattern_rules": {
+    "prefer": ["solid", "vertical_stripe", "subtle_print", "micro_check", "pin_stripe"],
+    "tolerate": ["medium_check", "small_floral_print", "geometric_subtle"],
+    "avoid": ["horizontal_stripe", "broad_horizontal_stripe", "large_bold_print", "oversized_check", "buffalo_check_oversize", "loud_floral", "logo_heavy"]
+  },
+  "budget_inr": {
+    "shirt_max": 2500,
+    "tshirt_max": 1500,
+    "trouser_max": 3000,
+    "jeans_max": 3000,
+    "shorts_max": 1500,
+    "shoes_max": 5000,
+    "jacket_max": 4000,
+    "trackpant_max": 2000
+  },
+  "occasion_tags": [
+    "casual",
+    "smart_casual",
+    "office",
+    "wedding",
+    "party",
+    "outing",
+    "travel",
+    "gym",
+    "lounge"
+  ],
+  "shopping_priorities": {
+    "primary": "wardrobe_gap",
+    "secondary": "discount",
+    "tertiary": "rating"
+  }
+}
