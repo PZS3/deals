@@ -703,25 +703,55 @@
   let currentStore = 'all';
   let suitsYouOnly = false;
 
-  const COLOR_GREAT = ['navy','olive','mustard','burgundy','wine','maroon','forest green','dark green',
-    'teal','rust','burnt orange','chocolate','brown','white','cream','beige','ivory','emerald','coral',
-    'terracotta','charcoal','deep purple','aubergine','royal blue','camel','khaki','tan','gold','copper','black','dark grey'];
-  const COLOR_GOOD = ['grey','blue','green','orange','red','purple','yellow','indigo','peach','pink'];
-  const COLOR_AVOID = ['icy blue','baby blue','pastel pink','lavender','ash grey','neon','fluorescent',
-    'light pink','pale blue','silver','mauve'];
+  // Deep Autumn — refined color matching for dark skin + warm undertone + chubby build
+  // Dark solids are best (slimming + contrast with skin). Earthy/jewel tones pop.
+  const COLOR_GREAT = [
+    'navy','navy blue','dark navy',
+    'olive','dark olive','military green',
+    'maroon','burgundy','wine','dark red','mahogany',
+    'teal','dark teal','petrol blue',
+    'forest green','dark green','emerald','bottle green',
+    'charcoal','dark grey','graphite','steel grey',
+    'rust','burnt orange','terracotta','brick',
+    'mustard','dark yellow','ochre',
+    'chocolate','dark brown','coffee','espresso','brown',
+    'black','jet black',
+    'white','off white','cream','ivory',
+    'camel','khaki','tan','beige','sand',
+    'deep purple','aubergine','plum','dark purple',
+    'royal blue','cobalt','indigo','dark blue',
+    'copper','bronze','gold'
+  ];
+  const COLOR_GOOD = [
+    'grey','green','blue','red','orange','purple','yellow',
+    'multi','printed','check','stripe','melange'
+  ];
+  const COLOR_AVOID = [
+    'pastel','icy blue','baby blue','sky blue','light blue','powder blue',
+    'pastel pink','light pink','blush','rose','baby pink',
+    'lavender','lilac','mauve',
+    'ash grey','light grey','pale grey','silver',
+    'neon','fluorescent','lime green','hot pink',
+    'peach','coral pink','salmon',
+    'mint','aqua','turquoise light'
+  ];
 
   function getBestScore(deal) {
-    // Discount score (0-100): 30% off = 0, 90% off = 100
     const discScore = Math.min(100, Math.max(0, (deal.discount_pct - 30) * (100 / 60)));
-    // Rating score (0-100): 4.0 = 50, 4.5 = 75, 5.0 = 100
     const ratingScore = deal.rating > 0 ? Math.min(100, (deal.rating - 3.5) * (100 / 1.5)) : 40;
-    // Color match score: great=100, good=60, unknown=30, avoid=0
     const cm = getColorMatch(deal);
     const colorScore = cm.level === 'great' ? 100 : cm.level === 'good' ? 60 : cm.level === 'avoid' ? 0 : 30;
-    // Review count score (0-100): more reviews = more trustworthy
     const rcScore = Math.min(100, (deal.rating_count / 50) * 100);
-    // Weighted: 35% discount + 25% rating + 25% color + 15% reviews
-    return (discScore * 0.35) + (ratingScore * 0.25) + (colorScore * 0.25) + (rcScore * 0.15);
+
+    // Body type bonus: dark solid colors get extra points (slimming effect)
+    const colorText = ((deal.color || '') + ' ' + deal.name).toLowerCase();
+    let bodyBonus = 0;
+    const darkSolids = ['black','navy','charcoal','dark','maroon','burgundy','forest','deep','espresso','chocolate'];
+    if (darkSolids.some(c => colorText.includes(c))) bodyBonus = 15;
+    // Penalize horizontal stripes
+    if (colorText.includes('horizontal') || colorText.includes('broad stripe')) bodyBonus -= 20;
+
+    return (discScore * 0.30) + (ratingScore * 0.25) + (colorScore * 0.25) + (rcScore * 0.10) + bodyBonus * 0.10;
   }
 
   function getColorMatch(deal) {
