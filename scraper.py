@@ -248,8 +248,10 @@ def scrape_ajio(config):
 def scrape_myntra(config):
     """Myntra embeds product JSON in script tags on search pages."""
     deals = []
-    session = get_session()
     brands = config["brands"]
+
+    # Myntra works best with standard requests (curl-cffi gets empty products)
+    session = get_session()
 
     # Myntra search URLs — sorted by discount, multiple brand groups, deep pagination
     search_urls = {
@@ -436,11 +438,12 @@ def scrape_myntra(config):
                     # Size check: L = 40/42 for shirts, L for tshirts, 10/UK10 for shoes, 34 for pants
                     target_size = cat_conf["size"]
                     size_aliases = {
-                        "L": ["L", "l", "40", "42", "Large"],
-                        "34": ["34", "32-34", "34-36"],
-                        "10": ["10", "UK10", "UK 10", "10UK"],
+                        "L": ["L", "l", "40", "42", "Large", "LARGE", "Lg"],
+                        "34": ["34", "32-34", "34-36", "32", "33", "34W"],
+                        "10": ["10", "UK10", "UK 10", "10UK", "UK9", "9", "10.5", "IND-10"],
                     }
                     valid_sizes = size_aliases.get(target_size, [target_size])
+                    # If no sizes listed at all, let it through (don't filter)
                     if sizes and not any(s.strip() in valid_sizes for s in sizes):
                         continue
 
@@ -468,7 +471,7 @@ def scrape_myntra(config):
             except Exception as e:
                 log.warning(f"[Myntra] Error: {e}")
 
-            time.sleep(2)
+            time.sleep(random.uniform(1.5, 3.5))  # Random delay to avoid rate limiting
 
     log.info(f"[Myntra] Total: {len(deals)} deals")
     return deals
