@@ -14,8 +14,8 @@
   "sizes": {
     "shirt": ["XL", "XXL"],
     "tshirt": "XL",
-    "trousers": "36",
-    "jeans": "36",
+    "trousers": "34",
+    "jeans": "34",
     "shorts": "L",
     "shoes_uk": "10",
     "shoes_eu": "44"

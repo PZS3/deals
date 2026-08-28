@@ -1,0 +1,293 @@
+{
+ "generated_at": "2026-07-30",
+ "source": "workflow wf_9e5a2598-383 (7 vision agents, images downloaded and read)",
+ "note": "Image-verified verdicts. \"violation\" = a hard rule visibly broken in the photo (loudness/fit cannot be read from the product name). \"uncertain\" = image mismatched or ambiguous.",
+ "verdicts": {
+  "myntra_54a6e51c": {
+   "name": "HRX by Hrithik Roshan Solid Round Neck T-shirt",
+   "overall": "compliant",
+   "true_color": "maroon / burgundy",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Deep maroon solid tee with subtle waffle-knit texture and only a small white HRX chest logo (not logo_heavy). Drapes with normal ease on the model — regular cut, maroon is in the profile's great palette, and Rs 356 is far under the Rs 1500 tshirt budget."
+  },
+  "myntra_5b536244": {
+   "name": "HRX by Hrithik Roshan Solid Regular Fit T-shirt",
+   "overall": "compliant",
+   "true_color": "black",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Solid black tee with a small white HRX chest logo only; visibly regular fit with room through the body, matching the 'Regular Fit' name. Black is a preferred dark solid and price (Rs 356) is well within budget."
+  },
+  "myntra_e9965572": {
+   "name": "HRX by Hrithik Roshan Men Mid Rise Track Pants",
+   "overall": "compliant",
+   "true_color": "black",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Solid black track pants with a straight, roomy leg (not tapered-slim), small hip logo, and a single thigh cargo pocket with a thin reflective strip — nothing loud or logo-heavy. Lightweight poly fabric suits July heat and Rs 551 is well under the Rs 2000 trackpant cap."
+  },
+  "myntra_5c74bde9": {
+   "name": "HRX by Hrithik Roshan Solid Regular Fit T-shirt",
+   "overall": "compliant",
+   "true_color": "charcoal / dark grey",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Dark charcoal solid tee with subtle waffle texture and only a small white HRX chest logo (small logo = ok). Sits with regular ease on the model; charcoal is on the profile's great-colors list and price 339 is well under the 1500 tshirt budget."
+  },
+  "myntra_213b5931": {
+   "name": "Mast & Harbour Men Relaxed Tartan Checks Checked Casual Shirt",
+   "overall": "violation",
+   "true_color": "white with steel/teal-blue and pale yellow tartan",
+   "pattern": "oversized_check",
+   "pattern_verdict": "violation",
+   "fit_looks": "relaxed",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "The tartan is very large-scale — single check repeat spans roughly a third of the chest with big solid blue blocks, which is oversized/bold check, a hard-avoided pattern that will widen a stocky BMI-32.7 frame. Fit is genuinely relaxed and the blue is mid-tone (not baby/light blue), but the pattern alone breaks a hard rule."
+  },
+  "myntra_95e81f20": {
+   "name": "HRX by Hrithik Roshan Men Typography Printed Rapid-Dry Running T-shirt",
+   "overall": "compliant",
+   "true_color": "teal / petrol blue with black shoulder-side panels",
+   "pattern": "graphic_print",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Teal (a preferred Deep Autumn color) dry-fit tee; the 'PUSH YOUR LIMITS' chest typography is medium-sized — visible but not chest-dominating and not brand-logo-heavy, so it clears the avoid list though it is louder than the preferred subtle prints. Fit reads regular athletic with normal drape, and lightweight poly suits July heat."
+  },
+  "myntra_ed14dc30": {
+   "name": "HRX by Hrithik Roshan Brand Logo Printed Pure Cotton T-shirt",
+   "overall": "violation",
+   "true_color": "navy blue",
+   "pattern": "logo_heavy",
+   "pattern_verdict": "violation",
+   "fit_looks": "oversized",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Navy is a great-palette colour and the boxy oversized cut is acceptable, but the tee has a large high-contrast white brand logo spanning the centre chest (partly hidden by the model's hands, clearly not a small pocket mark). Chest-dominating branding = logo_heavy, a hard pattern violation."
+  },
+  "myntra_286b910f": {
+   "name": "HRX by Hrithik Roshan Men Brand Logo Printed Round Neck Regular Fit T-shirt",
+   "overall": "compliant",
+   "true_color": "white",
+   "pattern": "small_print",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Plain white tee with a compact black 'HRX Keep Going' logo at centre chest, small enough to pass as a modest brand mark rather than logo-heavy. Fit drapes regular on the model; white is in the profile's great palette and price (INR 275) is well under the tshirt budget."
+  },
+  "myntra_5362426d": {
+   "name": "Mast & Harbour Men Classic Floral Opaque Printed Casual Shirt",
+   "overall": "violation",
+   "true_color": "black and white",
+   "pattern": "large_bold_print",
+   "pattern_verdict": "violation",
+   "fit_looks": "relaxed",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Despite the 'floral' name, the image shows a dense all-over high-contrast black-and-white abstract linework print covering the whole shirt — loud, not subtle geometric, so it lands in the avoided large_bold_print class. Base colours (black/white) and the relaxed cut are otherwise fine."
+  },
+  "myntra_45052acd": {
+   "name": "The Roadster Lifestyle Co Men Solid Pack Of 2 Mid-Rise Lounge Shorts",
+   "overall": "compliant",
+   "true_color": "black",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "relaxed",
+   "fit_verdict": "ok",
+   "color_matches_metadata": false,
+   "notes": "Image shows solid BLACK drawstring lounge shorts (both pack swatches also read near-black), not the listed olive, but black is a preferred color so no rule is broken. Relaxed elastic-waist cut suits the stocky build; the small vertical 'SPORTS' side text is minor branding, not logo_heavy; Rs 869 for a 2-pack is within the Rs 1500 shorts budget."
+  },
+  "myntra_d764d110": {
+   "name": "Roadster Men Relaxed Regular Fit Mid-rise Cotton Cargos Trousers",
+   "overall": "uncertain",
+   "true_color": "navy blue (of pictured item)",
+   "pattern": "other",
+   "pattern_verdict": "uncertain",
+   "fit_looks": "na",
+   "fit_verdict": "uncertain",
+   "color_matches_metadata": false,
+   "notes": "Wrong image: the photo is a navy-and-red Reebok running shoe, not the listed olive cotton cargo trousers, so color, pattern and fit of the actual garment cannot be verified. Metadata itself (olive, relaxed regular fit, Rs 714) would be compliant, but the listing needs its image fixed before trusting it."
+  },
+  "myntra_a964dc3a": {
+   "name": "Roadster Men Relaxed Regular Fit Mid-rise Cotton Cargos Trousers",
+   "overall": "uncertain",
+   "true_color": "black",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "slim/tapered",
+   "fit_verdict": "uncertain",
+   "color_matches_metadata": false,
+   "notes": "Image appears mismatched: model wears BLACK slim/tapered chino-style trousers with no visible cargo pockets, contradicting the 'brown relaxed regular cargos' metadata (rank 8's image is also wrong, suggesting a feed mix-up). If the pictured slim cut were the real product it would violate the fit rule for a BMI-32.7 build, but the evidence is too unreliable to call it either way."
+  },
+  "myntra_94417055": {
+   "name": "HRX by Hrithik Roshan Solid Regular-Fit T-shirt",
+   "overall": "compliant",
+   "true_color": "teal-green grey heather melange",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": false,
+   "notes": "Reads as a heathered teal-grey rather than the listed olive, but still a mid-dark green tone well within the safe palette. Effectively solid with only a small chest logo and thin reflective sleeve strips; drapes loose and regular on the model."
+  },
+  "myntra_23fa1d5c": {
+   "name": "Mast & Harbour Men Graphic Printed T-shirt",
+   "overall": "compliant",
+   "true_color": "cream / off-white",
+   "pattern": "graphic_print",
+   "pattern_verdict": "ok",
+   "fit_looks": "oversized",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Cream matches metadata and is in the preferred palette; the single medium-large back illustration is muted and not loud or logo-heavy, and only the back is shown. Cut is boxy/oversized drop-shoulder, which is not in the avoid-fit list (only slim/tight cuts are barred)."
+  },
+  "myntra_123ac210": {
+   "name": "The Roadster Lifestyle Co Colourblocked Polo Collar Tshirt",
+   "overall": "violation",
+   "true_color": "navy with white, mustard-orange and brown blocks",
+   "pattern": "colourblock",
+   "pattern_verdict": "violation",
+   "fit_looks": "fitted",
+   "fit_verdict": "uncertain",
+   "color_matches_metadata": true,
+   "notes": "Colourblocking is executed as broad horizontal bands across the chest, which is an explicit hard-avoid pattern that will widen a stocky BMI-32.7 build. Colors themselves (navy/mustard/white/brown) are fine, but the polo also sits noticeably trim on the model."
+  },
+  "myntra_ba973ca7": {
+   "name": "Reebok Men Woven Design Energen Lux Running Shoes",
+   "overall": "violation",
+   "true_color": "black with a large fluorescent lime-green vector stripe and white sole",
+   "pattern": "colourblock",
+   "pattern_verdict": "ok",
+   "fit_looks": "na",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Base is black, but the side is dominated by a large neon/fluorescent lime-green Reebok vector — neon, fluorescent and lime green are all explicitly in the avoid palette. Price 1959 and Myntra store are fine; the color accent alone breaks a hard rule."
+  },
+  "myntra_02d29592": {
+   "name": "Reebok Men Marco Training or Gym Shoes",
+   "overall": "compliant",
+   "true_color": "black with royal-blue logo accents",
+   "pattern": "colourblock",
+   "pattern_verdict": "ok",
+   "fit_looks": "na",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "All-black trainer with chunky black sole; the blue accents are a mid/royal blue (a 'great' palette color), not icy or baby blue. Standard side branding only, price 1609 within the 5000 shoe budget."
+  },
+  "myntra_4041cc0d": {
+   "name": "Reebok Turbo flight M Men Running Shoes",
+   "overall": "compliant",
+   "true_color": "dark navy/ink upper with red vector and collar lining, white sole",
+   "pattern": "colourblock",
+   "pattern_verdict": "ok",
+   "fit_looks": "na",
+   "fit_verdict": "ok",
+   "color_matches_metadata": false,
+   "notes": "Metadata says black but the upper clearly reads very dark navy; navy is in the 'great' palette so the mismatch is harmless. Red accents are deep, not neon; discreet branding, price 1049 well under budget."
+  },
+  "myntra_dc11c887": {
+   "name": "Roadster Men Slim Fit Mid-Rise Stretchable Jeans",
+   "overall": "violation",
+   "true_color": "black",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "slim",
+   "fit_verdict": "violation",
+   "color_matches_metadata": true,
+   "notes": "Solid black is a great color and price 536 is fine, but the jeans are a declared Slim Fit and visibly sit slim-tapered on the model — slim is a hard never for a stocky BMI-32.7 build and will pull across thighs/seat."
+  },
+  "myntra_e6f6d86b": {
+   "name": "Roadster Men Jean Straight Fit Mid-Rise Low Distress Light Fade Stretchable Jeans",
+   "overall": "compliant",
+   "true_color": "dark indigo with a vintage dirty-tint fade",
+   "pattern": "texture",
+   "pattern_verdict": "ok",
+   "fit_looks": "relaxed",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Straight/relaxed loose cut with plenty of room through thigh and leg — well suited to a stocky build. Wash stays dark indigo (not light blue) despite the 'light fade' wording; solid denim, no distress of note, 734 within budget on Myntra."
+  },
+  "myntra_58c7c03c": {
+   "name": "Roadster Men Blue Blended Slim Fit Mid-Rise Stretchable Jeans",
+   "overall": "violation",
+   "true_color": "dark navy/indigo blue",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "fitted",
+   "fit_verdict": "violation",
+   "color_matches_metadata": true,
+   "notes": "Color (clean dark navy, solid) and price 543 are fine, but this is a declared Slim Fit; on the model it reads fitted-tapered and would read tighter still on a BMI-32.7 build — slim is a hard never regardless of how it drapes on a slim model."
+  },
+  "myntra_58cbeb5e": {
+   "name": "Mast & Harbour Geometric Printed Spread Collar Short Sleeves Relaxed Fit Shirt",
+   "overall": "compliant",
+   "true_color": "muted brown/tan with olive and cream (earthy multicolour)",
+   "pattern": "graphic_print",
+   "pattern_verdict": "ok",
+   "fit_looks": "relaxed",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Cuban-collar shirt in a dense but low-contrast earthy geometric print - busier than the preferred subtle prints yet not large/bold/loud, so within tolerated territory. Fit is visibly relaxed with drop shoulders and price (249) is far under the 2500 shirt budget."
+  },
+  "myntra_a3b8ea2d": {
+   "name": "Wrangler Men Casual Twill Weave Cotton Shirt",
+   "overall": "uncertain",
+   "true_color": "dark navy / indigo",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "fitted",
+   "fit_verdict": "uncertain",
+   "color_matches_metadata": true,
+   "notes": "Solid dark indigo slub twill with twin chest pockets - color and pattern are ideal for the profile. However the shirt sits close through the chest and waist on the slim model and the listing states no fit; Wrangler casual shirts are often slim, so confirm the fit spec before buying for a BMI-32.7 build."
+  },
+  "myntra_1fd50bdb": {
+   "name": "Jack & Jones Rick & Morty Printed Short Sleeves Casual Shirt",
+   "overall": "violation",
+   "true_color": "black base with hot pink, aqua/teal, blue and orange cartoon motifs",
+   "pattern": "large_bold_print",
+   "pattern_verdict": "violation",
+   "fit_looks": "regular",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "All-over large high-contrast Rick & Morty character print - a textbook large_bold_print/loud graphic, explicitly on the avoid list. The dominant motif colors (hot pink, aqua) are also avoid-palette hues even though the base is black."
+  },
+  "myntra_4217a1bb": {
+   "name": "Reebok Men Rout 2 M Running Shoes",
+   "overall": "compliant",
+   "true_color": "navy blue with white sole, lime-green lining and silver accent",
+   "pattern": "other",
+   "pattern_verdict": "ok",
+   "fit_looks": "na",
+   "fit_verdict": "ok",
+   "color_matches_metadata": false,
+   "notes": "Metadata says black but the shoe is clearly navy - still a great profile color, so no palette breach. Lime-green collar lining and a silver heel stripe are avoid-list hues but only small accents; branding is a normal small Reebok logo, not logo-heavy, and 1154 is well under the 5000 shoe budget."
+  },
+  "ajio_1b536d18": {
+   "name": "Men F1 Caven 2.0 IN Sneakers",
+   "overall": "compliant",
+   "true_color": "black with red sole and red collar lining",
+   "pattern": "solid",
+   "pattern_verdict": "ok",
+   "fit_looks": "na",
+   "fit_verdict": "ok",
+   "color_matches_metadata": true,
+   "notes": "Solid black low-top with red contrast sole, only a small F1 badge and tonal Puma formstrip - visually clean and within the 5000 budget. Caveat outside image scope: this is an Ajio pick at 1600 while comparable Myntra shoe picks run 1049-1959, so the Ajio-must-beat-Myntra-by-20% store rule likely fails and should be price-checked."
+  }
+ }
+}
