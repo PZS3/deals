@@ -1,24 +1,35 @@
 {
   "brands": [
-    "US Polo", "US Polo Assn", "U.S. Polo Assn.",
-    "Asics", "ASICS",
+    "US Polo",
+    "US Polo Assn",
+    "U.S. Polo Assn.",
+    "Asics",
+    "ASICS",
     "Allen Solly",
-    "Puma", "PUMA",
+    "Puma",
+    "PUMA",
     "Under Armour",
-    "Adidas", "ADIDAS",
-    "Nike", "NIKE",
-    "Levi's", "Levis", "LEVI'S",
+    "Adidas",
+    "ADIDAS",
+    "Nike",
+    "NIKE",
+    "Levi's",
+    "Levis",
+    "LEVI'S",
     "Tommy Hilfiger",
     "Calvin Klein",
-    "Reebok", "REEBOK",
-    "Skechers", "SKECHERS",
+    "Reebok",
+    "REEBOK",
+    "Skechers",
+    "SKECHERS",
     "New Balance",
     "Jack & Jones",
     "H&M",
     "Superdry",
     "Roadster",
     "Mast & Harbour",
-    "HRX", "HRX by Hrithik Roshan",
+    "HRX",
+    "HRX by Hrithik Roshan",
     "Van Heusen",
     "Arrow",
     "Peter England",
@@ -26,72 +37,115 @@
     "Indian Terrain",
     "Wrangler",
     "Pepe Jeans",
-    "Gap", "GAP",
+    "Gap",
+    "GAP",
     "Marks & Spencer",
     "GANT",
     "Fred Perry",
     "Lacoste",
-    "Benetton", "United Colors of Benetton",
+    "Benetton",
+    "United Colors of Benetton",
     "Celio",
     "Only & Sons",
-    "Selected Homme", "SELECTED",
+    "Selected Homme",
+    "SELECTED",
     "Scotch & Soda",
     "Flying Machine",
     "Wildcraft",
     "Columbia",
-    "The North Face", "North Face",
-    "Decathlon", "Kalenji", "Domyos",
-    "Fila", "FILA",
+    "The North Face",
+    "North Face",
+    "Decathlon",
+    "Kalenji",
+    "Domyos",
+    "Fila",
+    "FILA",
     "Champion",
     "Converse"
   ],
   "categories": {
     "tshirt": {
-      "keywords": ["t-shirt", "tshirt", "polo", "crew neck", "round neck", "henley"],
-      "size": "L",
-      "max_price": 99999,
+      "keywords": [
+        "t-shirt",
+        "tshirt",
+        "polo",
+        "crew neck",
+        "round neck",
+        "henley"
+      ],
+      "size": "XL",
+      "max_price": 1500,
       "min_discount_pct": 30
     },
     "shirt": {
-      "keywords": ["shirt", "casual shirt", "formal shirt", "oxford", "slim fit shirt"],
-      "size": "L",
-      "max_price": 99999,
+      "keywords": [
+        "shirt",
+        "casual shirt",
+        "formal shirt",
+        "oxford"
+      ],
+      "size": "XL",
+      "max_price": 2500,
       "min_discount_pct": 30
     },
     "shoes": {
-      "keywords": ["shoes", "sneakers", "running shoes", "sports shoes", "casual shoes"],
+      "keywords": [
+        "shoes",
+        "sneakers",
+        "running shoes",
+        "sports shoes",
+        "casual shoes"
+      ],
       "size": "10",
-      "max_price": 99999,
+      "max_price": 5000,
       "min_discount_pct": 30
     },
     "jeans": {
-      "keywords": ["jeans", "denim"],
+      "keywords": [
+        "jeans",
+        "denim"
+      ],
       "size": "34",
-      "max_price": 99999,
+      "max_price": 3000,
       "min_discount_pct": 30
     },
     "trousers": {
-      "keywords": ["trousers", "chinos", "pants"],
+      "keywords": [
+        "trousers",
+        "chinos",
+        "pants"
+      ],
       "size": "34",
-      "max_price": 99999,
+      "max_price": 3000,
       "min_discount_pct": 30
     },
     "shorts": {
-      "keywords": ["shorts", "bermuda"],
+      "keywords": [
+        "shorts",
+        "bermuda"
+      ],
       "size": "L",
-      "max_price": 99999,
+      "max_price": 1500,
       "min_discount_pct": 30
     },
     "jacket": {
-      "keywords": ["jacket", "windcheater", "bomber"],
-      "size": "L",
-      "max_price": 99999,
+      "keywords": [
+        "jacket",
+        "windcheater",
+        "bomber"
+      ],
+      "size": "XL",
+      "max_price": 4000,
       "min_discount_pct": 30
     },
     "trackpant": {
-      "keywords": ["track pants", "joggers", "sweatpants"],
-      "size": "L",
-      "max_price": 99999,
+      "keywords": [
+        "track pants",
+        "joggers",
+        "sweatpants"
+      ],
+      "size": "XL",
+      "max_price": 2000,
       "min_discount_pct": 30
     }
   },
@@ -99,19 +153,84 @@
   "color_profile": {
     "season": "Deep Autumn",
     "description": "Dark complexion, warm golden undertone",
-    "great": ["navy", "olive", "mustard", "burgundy", "wine", "maroon", "forest green", "dark green",
-              "teal", "rust", "burnt orange", "chocolate", "brown", "white", "cream", "beige", "ivory",
-              "emerald", "coral", "terracotta", "charcoal", "deep purple", "aubergine", "royal blue",
-              "camel", "khaki", "tan", "gold", "copper", "black", "dark grey"],
-    "good": ["grey", "blue", "green", "orange", "red", "purple", "yellow", "indigo", "peach", "pink"],
-    "avoid": ["icy blue", "baby blue", "pastel pink", "lavender", "ash grey", "neon", "fluorescent",
-              "light pink", "pale blue", "silver", "mauve"]
+    "great": [
+      "navy",
+      "olive",
+      "mustard",
+      "burgundy",
+      "wine",
+      "maroon",
+      "forest green",
+      "dark green",
+      "teal",
+      "rust",
+      "burnt orange",
+      "chocolate",
+      "brown",
+      "white",
+      "cream",
+      "beige",
+      "ivory",
+      "emerald",
+      "coral",
+      "terracotta",
+      "charcoal",
+      "deep purple",
+      "aubergine",
+      "royal blue",
+      "camel",
+      "khaki",
+      "tan",
+      "gold",
+      "copper",
+      "black",
+      "dark grey"
+    ],
+    "good": [
+      "grey",
+      "blue",
+      "green",
+      "orange",
+      "red",
+      "purple",
+      "yellow",
+      "indigo",
+      "peach",
+      "pink"
+    ],
+    "avoid": [
+      "icy blue",
+      "baby blue",
+      "pastel pink",
+      "lavender",
+      "ash grey",
+      "neon",
+      "fluorescent",
+      "light pink",
+      "pale blue",
+      "silver",
+      "mauve"
+    ]
   },
   "body_tips": {
-    "prefer": ["solid colors", "vertical stripes", "v-neck", "dark shades", "well-fitted"],
-    "avoid": ["horizontal stripes", "large bold patterns", "oversized baggy", "very tight"]
+    "prefer": [
+      "solid colors",
+      "vertical stripes",
+      "v-neck",
+      "dark shades",
+      "well-fitted"
+    ],
+    "avoid": [
+      "horizontal stripes",
+      "large bold patterns",
+      "oversized baggy",
+      "very tight"
+    ]
   },
-  "stores": ["myntra", "ajio"],
+  "stores": [
+    "myntra",
+    "ajio"
+  ],
   "scrape_delay_seconds": 2,
   "user_agents": [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",

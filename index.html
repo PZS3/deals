@@ -556,13 +556,15 @@
     <div class="filter-tab" onclick="setCategory('furniture')">Furniture</div>
   </div>
   <select class="sort-select" onchange="setSort(this.value)">
-    <option value="best">Best for You</option>
+    <option value="best" selected>Best for You</option>
     <option value="discount">Discount %</option>
     <option value="price-asc">Price: Low-High</option>
     <option value="price-desc">Price: High-Low</option>
     <option value="rating">Rating</option>
   </select>
   <button class="suits-btn" id="suitsBtn" onclick="toggleSuitsYou()">Suits You</button>
+  <button class="suits-btn" id="blockedBtn" onclick="toggleShowBlocked()">Rule-breakers hidden</button>
+  <span class="updated-text" id="blockedNote"></span>
   <button class="refresh-btn" id="refreshBtn" onclick="refreshDeals()"><span class="refresh-icon"></span><span class="btn-text">Refresh</span></button>
   <span class="updated-text" id="updatedText"></span>
 </div>
@@ -698,68 +700,145 @@
 <script>
   let allDeals = [];
   let currentCategory = 'all';
-  let currentSort = 'discount';
+  let currentSort = 'best';   // must match the <option selected> below
   let currentBrand = 'all';
   let currentStore = 'all';
   let suitsYouOnly = false;
+  let showBlocked = false;
 
-  // Deep Autumn — refined color matching for dark skin + warm undertone + chubby build
-  // Dark solids are best (slimming + contrast with skin). Earthy/jewel tones pop.
-  const COLOR_GREAT = [
-    'navy','navy blue','dark navy',
-    'olive','dark olive','military green',
-    'maroon','burgundy','wine','dark red','mahogany',
-    'teal','dark teal','petrol blue',
-    'forest green','dark green','emerald','bottle green',
-    'charcoal','dark grey','graphite','steel grey',
-    'rust','burnt orange','terracotta','brick',
-    'mustard','dark yellow','ochre',
-    'chocolate','dark brown','coffee','espresso','brown',
-    'black','jet black',
-    'white','off white','cream','ivory',
-    'camel','khaki','tan','beige','sand',
-    'deep purple','aubergine','plum','dark purple',
-    'royal blue','cobalt','indigo','dark blue',
-    'copper','bronze','gold'
-  ];
-  const COLOR_GOOD = [
-    'grey','green','blue','red','orange','purple','yellow',
-    'multi','printed','check','stripe','melange'
-  ];
-  const COLOR_AVOID = [
-    'pastel','icy blue','baby blue','sky blue','light blue','powder blue',
-    'pastel pink','light pink','blush','rose','baby pink',
-    'lavender','lilac','mauve',
-    'ash grey','light grey','pale grey','silver',
-    'neon','fluorescent','lime green','hot pink',
-    'peach','coral pink','salmon',
-    'mint','aqua','turquoise light'
-  ];
+  // ============================================================
+  // Owner rules — mirrored from super-pick/profile.json.
+  // Loaded live at startup (PROFILE/WARDROBE); these literals are the
+  // fallback if the fetch fails, so the page never silently stops filtering.
+  // ============================================================
+  let PROFILE = null, WARDROBE = [], VISION = {};
 
-  function getBestScore(deal) {
-    const discScore = Math.min(100, Math.max(0, (deal.discount_pct - 30) * (100 / 60)));
-    const ratingScore = deal.rating > 0 ? Math.min(100, (deal.rating - 3.5) * (100 / 1.5)) : 40;
-    const cm = getColorMatch(deal);
-    const colorScore = cm.level === 'great' ? 100 : cm.level === 'good' ? 60 : cm.level === 'avoid' ? 0 : 30;
-    const rcScore = Math.min(100, (deal.rating_count / 50) * 100);
+  const COLOR_GREAT = ['navy','navy blue','dark navy','olive','dark olive','military green',
+    'maroon','burgundy','wine','dark red','mahogany','teal','dark teal','petrol blue',
+    'forest green','dark green','emerald','bottle green','charcoal','dark grey','graphite',
+    'steel grey','rust','burnt orange','terracotta','brick','mustard','dark yellow','ochre',
+    'chocolate','dark brown','coffee','espresso','brown','black','jet black','white',
+    'off white','offwhite','cream','ivory','camel','khaki','tan','beige','sand','deep purple',
+    'aubergine','plum','dark purple','royal blue','cobalt','indigo','dark blue','copper','bronze','gold'];
+  const COLOR_GOOD = ['grey','gray','green','blue','red','orange','purple','yellow','multi','melange'];
+  // Single tokens added ('pink','coral','sky') — the two-word phrases alone
+  // never matched compact store codes like '..._ltblue' or 'sunsetrose'.
+  const COLOR_AVOID = ['pastel','pastels','icy blue','baby blue','sky blue','light blue','powder blue',
+    'ltblue','lightblue','skyblue','sky','pink','pastel pink','light pink','blush','rose','baby pink',
+    'lavender','lilac','mauve','ash grey','light grey','pale grey','lightgrey','silver','neon',
+    'fluorescent','fluoro','lime green','lime','hot pink','peach','coral','coral pink','salmon',
+    'mint','aqua','turquoise'];
 
-    // Body type bonus: dark solid colors get extra points (slimming effect)
-    const colorText = ((deal.color || '') + ' ' + deal.name).toLowerCase();
-    let bodyBonus = 0;
-    const darkSolids = ['black','navy','charcoal','dark','maroon','burgundy','forest','deep','espresso','chocolate'];
-    if (darkSolids.some(c => colorText.includes(c))) bodyBonus = 15;
-    // Penalize horizontal stripes
-    if (colorText.includes('horizontal') || colorText.includes('broad stripe')) bodyBonus -= 20;
+  const FIT_BAN   = /\b(slim|skinny|muscle\s*fit|extra\s*slim|super\s*slim)\b/i;
+  const PATTERN_BAN = /\b(horizontal\s*strip\w*|broad\s*strip\w*|buffalo\s*check\w*|oversized\s*check\w*|colou?rblock\w*)\b/i;
+  const HOT_FABRIC  = /\b(wool|woollen|fleece|leather|corduroy|puffer|quilted|padded)\b/i;
+  const BUDGET = {shirt:2500,tshirt:1500,trousers:3000,jeans:3000,shorts:1500,shoes:5000,jacket:4000,trackpant:2000};
+  const SIZE_OK = {
+    shirt:['XL','XXL','2XL','44','46'], tshirt:['XL','XXL','2XL'],
+    jeans:['34','33','34W','32-34','34-36'], trousers:['34','33','34W','32-34','34-36'],
+    shoes:['10','UK10','UK 10','10UK','44'], shorts:['L','XL'], jacket:['XL','XXL','2XL'], trackpant:['XL','XXL','2XL'],
+  };
+  const HOT_MONTH = (() => { const m = new Date().getMonth(); return m >= 2 && m <= 9; })();
 
-    return (discScore * 0.30) + (ratingScore * 0.25) + (colorScore * 0.25) + (rcScore * 0.10) + bodyBonus * 0.10;
+  // Word-boundary match — plain includes() made 'tan' fire inside
+  // 'tartan'/'manhattan' and 'red' inside 'tailored'/'textured',
+  // which wrongly promoted 168 deals (incl. pink shirts) to "Suits You".
+  function hasTerm(text, term) {
+    const t = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '[\\s-]*');
+    return new RegExp('(^|[^a-z])' + t + '([^a-z]|$)', 'i').test(text);
   }
+  function anyTerm(text, list) { return list.some(c => hasTerm(text, c)); }
 
   function getColorMatch(deal) {
-    const colorText = ((deal.color || '') + ' ' + deal.name).toLowerCase();
-    for (const c of COLOR_AVOID) { if (colorText.includes(c)) return { level: 'avoid', label: 'Avoid' }; }
-    for (const c of COLOR_GREAT) { if (colorText.includes(c)) return { level: 'great', label: 'Suits You' }; }
-    for (const c of COLOR_GOOD) { if (colorText.includes(c)) return { level: 'good', label: 'Good Match' }; }
-    return { level: 'unknown', label: '' };
+    const colorField = (deal.color || '').toLowerCase().replace(/[0-9_]+/g, ' ');
+    const nameField  = (deal.name  || '').toLowerCase();
+    // Colour field is authoritative; the name is only a fallback.
+    if (anyTerm(colorField, COLOR_AVOID)) return { level:'avoid', label:'Avoid' };
+    if (anyTerm(colorField, COLOR_GREAT)) return { level:'great', label:'Suits You' };
+    if (anyTerm(colorField, COLOR_GOOD))  return { level:'good',  label:'Good Match' };
+    if (anyTerm(nameField,  COLOR_AVOID)) return { level:'avoid', label:'Avoid' };
+    if (anyTerm(nameField,  COLOR_GREAT)) return { level:'great', label:'Suits You' };
+    if (anyTerm(nameField,  COLOR_GOOD))  return { level:'good',  label:'Good Match' };
+    return { level:'unknown', label:'' };
+  }
+
+  function sizeStatus(deal) {
+    const want = SIZE_OK[deal.category];
+    const have = (deal.sizes_available || []).map(x => String(x).trim().toUpperCase());
+    if (!want || have.length === 0) return 'unknown';
+    return have.some(h => want.includes(h)) ? 'ok' : 'missing';
+  }
+
+  // Every hard rule from profile.json, in one place.
+  function violations(deal) {
+    const v = [];
+    const name = deal.name || '';
+    // An image-verified verdict outranks anything the product NAME implies:
+    // "loud" print vs "subtle" print, and a slim cut sold as "regular",
+    // are only visible in the photo. See super-pick/vision-verdicts.json.
+    const seen = VISION[deal.id];
+    if (seen && seen.overall === 'violation') {
+      if (seen.pattern_verdict === 'violation') v.push('photo: ' + (seen.pattern || 'bad pattern'));
+      else if (seen.fit_verdict === 'violation') v.push('photo: cut too slim');
+      else v.push('photo: breaks a rule');
+      return v;
+    }
+    if (deal.category !== 'shoes' && FIT_BAN.test(name)) v.push('slim fit');
+    if (getColorMatch(deal).level === 'avoid') v.push('avoid colour');
+    const cap = BUDGET[deal.category];
+    if (cap && deal.price > cap) v.push('over ₹' + cap.toLocaleString('en-IN'));
+    if (PATTERN_BAN.test(name)) v.push('banned pattern');
+    if (sizeStatus(deal) === 'missing') v.push('not in your size');
+    if (HOT_MONTH && deal.category === 'jacket' && HOT_FABRIC.test(name)) v.push('too warm for now');
+    return v;
+  }
+
+  // Owner already owns this colour in this category (wardrobe.json).
+  function ownedDuplicate(deal) {
+    if (!WARDROBE.length) return false;
+    const c = getColorMatch(deal), col = (deal.color || '').toLowerCase();
+    return WARDROBE.some(w => w.category === deal.category && w.color &&
+      w.color !== 'unknown' && col && hasTerm(col, String(w.color).toLowerCase()));
+  }
+
+  function getBestScore(deal) {
+    const discScore   = Math.min(100, Math.max(0, (deal.discount_pct - 30) * (100 / 60)));
+    const ratingScore = deal.rating > 0 ? Math.min(100, (deal.rating - 3.5) * (100 / 1.5)) : 40;
+    const cm = getColorMatch(deal);
+    const colorScore  = cm.level === 'great' ? 100 : cm.level === 'good' ? 60 : cm.level === 'avoid' ? 0 : 30;
+    const rcScore     = Math.min(100, (deal.rating_count / 50) * 100);
+    const text = ((deal.color || '') + ' ' + deal.name).toLowerCase();
+    let bodyBonus = 0;
+    if (anyTerm(text, ['black','navy','charcoal','maroon','burgundy','forest green','espresso','chocolate','dark'])) bodyBonus = 15;
+    if (PATTERN_BAN.test(deal.name)) bodyBonus -= 20;
+    // Loudness can't be read from a name, so these are PENALTIES not bans;
+    // an image-verified 'compliant' cancels the guess.
+    const seen = VISION[deal.id];
+    let loudPenalty = 0;
+    if (!seen && /\b(brand\s*logo|logo\s*print|all\s*over\s*print|graphic)\b/i.test(deal.name)) loudPenalty -= 8;
+    if (!seen && /\bfloral\b/i.test(deal.name)) loudPenalty -= 5;
+    const seenBonus = seen && seen.overall === 'compliant' ? 12 : 0;
+    // Myntra reaches Vijayawada in 2-3 days vs Ajio's 7-10.
+    const storeBonus = deal.store === 'Myntra' ? 15 : 0;
+    // Don't re-buy a colour already hanging in the wardrobe.
+    const dupPenalty = ownedDuplicate(deal) ? -25 : 0;
+    // Weights: 30% discount, 25% rating, 25% colour, 10% review volume,
+    // then body/store/duplicate adjustments.
+    return (discScore * 0.30) + (ratingScore * 0.25) + (colorScore * 0.25) + (rcScore * 0.10)
+           + (bodyBonus * 0.10) + (storeBonus * 0.05) + dupPenalty + loudPenalty + seenBonus;
+  }
+
+  async function loadRules() {
+    try {
+      const [pr, wr, vv] = await Promise.all([
+        fetch('super-pick/profile.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('super-pick/wardrobe.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('super-pick/vision-verdicts.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+      ]);
+      if (pr) PROFILE = pr;
+      if (wr) WARDROBE = Array.isArray(wr) ? wr : (wr.items || wr.wardrobe || []);
+      if (vv && vv.verdicts) VISION = vv.verdicts;
+    } catch (e) { /* literals above remain in force */ }
   }
 
   async function loadDeals() {
@@ -812,7 +891,17 @@
     if (currentCategory !== 'all') filtered = filtered.filter(d => d.category === currentCategory);
     if (currentBrand !== 'all') filtered = filtered.filter(d => d.brand === currentBrand);
     if (currentStore !== 'all') filtered = filtered.filter(d => d.store === currentStore);
-    if (suitsYouOnly) filtered = filtered.filter(d => getColorMatch(d).level === 'great');
+    // Hard rules are EXCLUSIONS, not hints — a slim-fit, over-budget or
+    // wrong-size item is never a "pick". showBlocked reveals them for browsing.
+    let blocked = 0;
+    if (!showBlocked) {
+      const before = filtered.length;
+      filtered = filtered.filter(d => violations(d).length === 0);
+      blocked = before - filtered.length;
+    }
+    if (suitsYouOnly) filtered = filtered.filter(d => getColorMatch(d).level === 'great' && violations(d).length === 0);
+    document.getElementById('blockedNote').textContent =
+      blocked > 0 ? blocked.toLocaleString('en-IN') + ' hidden (break your rules)' : '';
 
     switch (currentSort) {
       case 'best':
@@ -837,7 +926,17 @@
 
     grid.innerHTML = filtered.map(deal => {
       const cm = getColorMatch(deal);
-      const colorBadge = cm.level !== 'unknown' ? `<div class="color-badge ${cm.level}">${cm.label}</div>` : '';
+      const vio = violations(deal);
+      const colorBadge = vio.length
+        ? `<div class="color-badge avoid">${vio[0]}</div>`
+        : (cm.level !== 'unknown' ? `<div class="color-badge ${cm.level}">${cm.label}</div>` : '');
+      const seenV = VISION[deal.id];
+      const dupBadge = (!vio.length && ownedDuplicate(deal))
+        ? '<div class="color-badge good" style="top:auto;bottom:0.5rem">Own this colour</div>'
+        : (!vio.length && seenV && seenV.overall === 'compliant'
+            ? '<div class="color-badge great" style="top:auto;bottom:0.5rem">Photo checked</div>'
+            : (!vio.length && seenV && seenV.overall === 'uncertain'
+                ? '<div class="color-badge good" style="top:auto;bottom:0.5rem">Photo unclear</div>' : ''));
       return `
       <div class="deal-card" onclick="window.open(${deal.store === 'Ajio' ? `'https://www.ajio.com/search/?text=${encodeURIComponent(deal.brand + ' ' + deal.name)}'` : `'${deal.url}'`},'_blank')">
         <div class="deal-img-wrap">
@@ -850,6 +949,7 @@
           <div class="discount-badge">${deal.discount_pct}% OFF</div>
           <div class="store-tag ${deal.store.toLowerCase()}">${deal.store}</div>
           ${colorBadge}
+          ${dupBadge}
         </div>
         <div class="deal-info">
           <div class="deal-brand">${deal.brand}</div>
@@ -861,7 +961,12 @@
           <div class="deal-save">Save \u20B9${(deal.mrp - deal.price).toLocaleString('en-IN')}</div>
           ${deal.rating > 0 ? `<div class="deal-rating"><span class="stars">${deal.rating.toFixed(1)} \u2605</span><span class="rating-count">${deal.rating_count ? deal.rating_count.toLocaleString() : ''}</span></div>` : ''}
           <a class="deal-buy" href="${deal.store === 'Ajio' ? 'https://www.ajio.com/search/?text=' + encodeURIComponent(deal.brand + ' ' + deal.name) : deal.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Buy on ${deal.store} \u2192</a>
-          ${deal.store === 'Ajio' ? '<div style="font-size:0.6rem;color:var(--dim);text-align:center;margin-top:0.25rem">Check size on site</div>' : '<div style="font-size:0.6rem;color:var(--green);text-align:center;margin-top:0.25rem">Size verified</div>'}
+          ${(() => {
+            const st = sizeStatus(deal);
+            if (st === 'ok') return '<div style="font-size:0.6rem;color:var(--green);text-align:center;margin-top:0.25rem">Size verified</div>';
+            if (st === 'missing') return '<div style="font-size:0.6rem;color:#ef4444;text-align:center;margin-top:0.25rem">Not in your size</div>';
+            return '<div style="font-size:0.6rem;color:var(--dim);text-align:center;margin-top:0.25rem">Check size on site</div>';
+          })()}
         </div>
       </div>`;
     }).join('');
@@ -881,6 +986,13 @@
     el.classList.add('active');
     renderDeals();
   }
+  function toggleShowBlocked() {
+    showBlocked = !showBlocked;
+    document.getElementById('blockedBtn').classList.toggle('active', showBlocked);
+    document.getElementById('blockedBtn').textContent = showBlocked ? 'Hiding nothing' : 'Rule-breakers hidden';
+    renderDeals();
+  }
+
   function toggleSuitsYou() {
     suitsYouOnly = !suitsYouOnly;
     document.getElementById('suitsBtn').classList.toggle('active', suitsYouOnly);
@@ -1023,7 +1135,9 @@
   const origToggleStore = toggleStore;
   toggleStore = function(el, store) { origToggleStore(el, store); if(document.getElementById('couponsGrid').style.display!=='none') renderCoupons(); };
 
-  loadDeals();
+  // Rules first, then deals — otherwise the first render runs with an empty
+  // wardrobe and the duplicate check silently passes everything.
+  loadRules().then(loadDeals);
 </script>
 </body>
 </html>
