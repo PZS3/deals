@@ -18,6 +18,31 @@ If the log below still shows "Operation not permitted" after a real cron run,
 the interpreter-inheritance trick did not work and the fix is one of:
   1. move this repo out of ~/Desktop (Documents and Downloads are also protected)
   2. System Settings > Privacy & Security > Full Disk Access > add /usr/sbin/cron
+
+SECOND failure, same shape, different layer (4-10 Sep 2026): with git running,
+`git add` and `git commit` both succeeded every run and only the push died with
+
+    fatal: could not read Username for 'https://github.com': Device not configured
+
+credential.helper was osxkeychain, and cron has no logged-in GUI session to
+unlock the keychain with. Nothing upstream noticed because commit succeeded, so
+deals.json stayed current locally while 18 commits piled up unpushed and the
+Vercel site froze for five days. That is the signature to watch for: local data
+fresh, site stale, `git rev-list --count origin/main..main` climbing.
+
+Fixed by taking the keychain out of the path entirely — origin is now
+git@github.com and auth is a passphrase-less ed25519 deploy key scoped to this
+repo alone (~/.ssh/deals_deploy, installed on PZS3/deals as "deals-cron-publish"
+with write access). core.sshCommand in .git/config pins that key with
+IdentitiesOnly=yes. Two things this depends on, both easy to lose:
+  * core.sshCommand is LOCAL repo config — a fresh clone loses it and silently
+    falls back to whatever keys the agent offers.
+  * github.com must be in ~/.ssh/known_hosts, or non-interactive ssh refuses to
+    verify the host and the push hangs/fails instead of prompting.
+
+To verify a change here without waiting 6h for cron, reproduce its environment:
+
+    env -i HOME=$HOME PATH=/usr/bin:/bin git -C <repo> push origin main
 """
 
 import logging
@@ -74,8 +99,22 @@ def main():
     if git("commit", "-m", f"Update deals {stamp}", check=True).returncode:
         return 1
 
-    if git("push", "origin", "main").returncode:
-        log.error("commit succeeded but push failed — it will go out with the next run")
+    push = git("push", "origin", "main")
+    if push.returncode:
+        # Say WHICH failure this is. "push failed" alone is what let the
+        # keychain problem hide for five days behind a succeeding commit.
+        detail = (push.stderr or push.stdout)
+        if "could not read Username" in detail or "Authentication failed" in detail:
+            log.error("auth failed — origin is HTTPS and no credential is reachable "
+                      "from cron. See the header: origin should be git@github.com.")
+        elif "Permission denied (publickey)" in detail:
+            log.error("ssh key rejected — check core.sshCommand still points at "
+                      "~/.ssh/deals_deploy and the deploy key is still on the repo.")
+        elif "Host key verification failed" in detail:
+            log.error("github.com missing from ~/.ssh/known_hosts — non-interactive "
+                      "ssh cannot verify it.")
+        behind = git("rev-list", "--count", "origin/main..main", quiet=True).stdout.strip()
+        log.error("commit succeeded but push failed — %s commit(s) now unpushed", behind or "?")
         return 1
 
     log.info("published %s — Vercel will redeploy", git("rev-parse", "--short", "HEAD").stdout.strip())
