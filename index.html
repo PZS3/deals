@@ -733,6 +733,8 @@
   const FIT_BAN   = /\b(slim|skinny|muscle\s*fit|extra\s*slim|super\s*slim)\b/i;
   const PATTERN_BAN = /\b(horizontal\s*strip\w*|broad\s*strip\w*|buffalo\s*check\w*|oversized\s*check\w*|colou?rblock\w*)\b/i;
   const HOT_FABRIC  = /\b(wool|woollen|fleece|leather|corduroy|puffer|quilted|padded)\b/i;
+  // Slides he has rejected: team/IPL colourways, logo prints, flashy finishes.
+  const SLIDE_LOUD  = /\b(printed|print|graphic|camo\w*|team|mumbai indians|chennai super kings|royal challengers|knight riders|ipl|marvel|disney|glitter|sequin\w*|embellished)\b/i;
   const BUDGET = {shirt:2500,tshirt:1500,trousers:3000,jeans:3000,shorts:1500,shoes:5000,slides:5000,jacket:4000,trackpant:2000};
   const SIZE_OK = {
     shirt:['XL','XXL','2XL','44','46'], tshirt:['XL','XXL','2XL'],
@@ -790,6 +792,7 @@
     const cap = BUDGET[deal.category];
     if (cap && deal.price > cap) v.push('over ₹' + cap.toLocaleString('en-IN'));
     if (PATTERN_BAN.test(name)) v.push('banned pattern');
+    if (deal.category === 'slides' && SLIDE_LOUD.test(name)) v.push('loud slide');
     if (sizeStatus(deal) === 'missing') v.push('not in your size');
     if (HOT_MONTH && deal.category === 'jacket' && HOT_FABRIC.test(name)) v.push('too warm for now');
     return v;
