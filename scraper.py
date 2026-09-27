@@ -450,11 +450,15 @@ def scrape_myntra(config):
             "https://www.myntra.com/men-jackets?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount",
             "https://www.myntra.com/men-jackets?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount&p=2",
         ],
+        # HRX has ~2,900 deep-discount listings; sharing a discount sort with
+        # it, the other sports brands never reached the first 4 pages.
         "trackpant": [
-            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount",
-            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=2",
-            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=3",
-            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=4",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CUNDER+ARMOUR%2CASICS&sort=discount",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CUNDER+ARMOUR%2CASICS&sort=discount&p=2",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CUNDER+ARMOUR%2CASICS&sort=discount&p=3",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CUNDER+ARMOUR%2CASICS&sort=discount&p=4",
+            "https://www.myntra.com/men-track-pants?f=Brand%3AHRX+by+Hrithik+Roshan&sort=discount",
+            "https://www.myntra.com/men-track-pants?f=Brand%3AHRX+by+Hrithik+Roshan&sort=discount&p=2",
         ],
         "shoes": [
             "https://www.myntra.com/men-sports-shoes?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount",
