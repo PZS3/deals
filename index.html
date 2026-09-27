@@ -1043,9 +1043,11 @@
             const sk = stockState(deal);
             if (sk.state === 'out') return line('#ef4444', 'Sold out in your size');
             if (sk.state === 'in') {
-              const list = sk.sizes.map(([k, n]) => n === null ? k : `${k} ${n}`).join(' · ');
+              const fw = deal.category === 'shoes' || deal.category === 'slides';
+              const name = k => fw && /^\d+$/.test(k) ? 'UK ' + k : k;
+              const list = sk.sizes.map(([k, n]) => n === null ? name(k) : fw ? `${name(k)} (${n} left)` : `${k} ${n}`).join(' · ');
               return sk.total !== null && sk.total <= LOW_STOCK
-                ? line('#f59e0b', `Only ${sk.total} left in your size (${list})`)
+                ? line('#f59e0b', `Only ${sk.total} left in your size (${sk.sizes.map(([k]) => name(k)).join(', ')})`)
                 : line('var(--green)', `In stock: ${list}`);
             }
             const st = sizeStatus(deal);
