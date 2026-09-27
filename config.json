@@ -76,7 +76,12 @@
       ],
       "size": "XL",
       "max_price": 1500,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "XL",
+        "XXL",
+        "2XL"
+      ]
     },
     "shirt": {
       "keywords": [
@@ -87,7 +92,14 @@
       ],
       "size": "XL",
       "max_price": 2500,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "XL",
+        "XXL",
+        "2XL",
+        "44",
+        "46"
+      ]
     },
     "shoes": {
       "keywords": [
@@ -99,7 +111,11 @@
       ],
       "size": "10",
       "max_price": 5000,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "10",
+        "UK10"
+      ]
     },
     "jeans": {
       "keywords": [
@@ -108,7 +124,11 @@
       ],
       "size": "34",
       "max_price": 3000,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "34",
+        "34W"
+      ]
     },
     "trousers": {
       "keywords": [
@@ -118,7 +138,11 @@
       ],
       "size": "34",
       "max_price": 3000,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "34",
+        "34W"
+      ]
     },
     "shorts": {
       "keywords": [
@@ -127,7 +151,11 @@
       ],
       "size": "L",
       "max_price": 1500,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "L",
+        "XL"
+      ]
     },
     "jacket": {
       "keywords": [
@@ -137,7 +165,12 @@
       ],
       "size": "XL",
       "max_price": 4000,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "XL",
+        "XXL",
+        "2XL"
+      ]
     },
     "trackpant": {
       "keywords": [
@@ -147,7 +180,12 @@
       ],
       "size": "XL",
       "max_price": 2000,
-      "min_discount_pct": 30
+      "min_discount_pct": 30,
+      "stock_sizes": [
+        "XL",
+        "XXL",
+        "2XL"
+      ]
     },
     "slides": {
       "keywords": [
@@ -160,7 +198,11 @@
       ],
       "size": "10",
       "max_price": 5000,
-      "min_discount_pct": 20
+      "min_discount_pct": 20,
+      "stock_sizes": [
+        "10",
+        "UK10"
+      ]
     }
   },
   "min_rating": 4.0,

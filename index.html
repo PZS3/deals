@@ -545,7 +545,8 @@
 <div class="toolbar">
   <div class="filter-tabs">
     <div class="filter-tab active" onclick="setCategory('all')">All</div>
-    <div class="filter-tab" onclick="setCategory('tshirt')">T-Shirts</div>
+    <div class="filter-tab" onclick="setCategory('tshirt:casual')">Casual Tees</div>
+    <div class="filter-tab" onclick="setCategory('tshirt:active')">Activewear</div>
     <div class="filter-tab" onclick="setCategory('shirt')">Shirts</div>
     <div class="filter-tab" onclick="setCategory('jeans')">Jeans</div>
     <div class="filter-tab" onclick="setCategory('trousers')">Trousers</div>
@@ -701,6 +702,14 @@
 <script>
   let allDeals = [];
   let currentCategory = 'all';
+  // A tab is a category, optionally narrowed by style: 'tshirt:active'.
+  function inCategory(d, tab) {
+    if (tab === 'all') return true;
+    const [cat, style] = tab.split(':');
+    // stock.json's style is refined from the product page (fabric/occasion).
+    const s = STOCK[d.id];
+    return d.category === cat && (!style || ((s && s.style) || d.style || 'casual') === style);
+  }
   let currentSort = 'best';   // must match the <option selected> below
   let currentBrand = 'all';
   let currentStore = 'all';
@@ -712,7 +721,7 @@
   // Loaded live at startup (PROFILE/WARDROBE); these literals are the
   // fallback if the fetch fails, so the page never silently stops filtering.
   // ============================================================
-  let PROFILE = null, WARDROBE = [], VISION = {};
+  let PROFILE = null, WARDROBE = [], VISION = {}, STOCK = {};
 
   const COLOR_GREAT = ['navy','navy blue','dark navy','olive','dark olive','military green',
     'maroon','burgundy','wine','dark red','mahogany','teal','dark teal','petrol blue',
@@ -766,6 +775,26 @@
     return { level:'unknown', label:'' };
   }
 
+  // Live stock in his sizes, from stock.json (check_stock.refresh_stock).
+  // Past its max age a reading means the stock stage has been failing:
+  // unknown. Ajio (counts:false) is a ~1-day rolling window, so it gets
+  // about two cycles; Myntra is re-checked every run.
+  const LOW_STOCK = 5;
+  function stockState(deal) {
+    const s = STOCK[deal.id];
+    if (!s || s.ok === null || s.ok === undefined) return { state: 'unknown' };
+    // Checked against another category's sizes (deal since re-filed).
+    if (s.category && s.category !== deal.category) return { state: 'unknown' };
+    const maxAgeH = s.counts === false ? 54 : 30;
+    const age = Date.now() - new Date(s.checked_at).getTime();
+    if (!(age <= maxAgeH * 3600 * 1000)) return { state: 'unknown' };
+    if (s.ok === false) return { state: 'out' };
+    // Ajio records carry availability only (counts:false, sizes map to null).
+    if (s.counts === false) return { state: 'in', sizes: Object.keys(s.sizes || {}).map(k => [k, null]), total: null };
+    const sizes = Object.entries(s.sizes || {}).filter(([, n]) => n > 0);
+    return { state: 'in', sizes, total: sizes.reduce((t, [, n]) => t + n, 0) };
+  }
+
   function sizeStatus(deal) {
     const want = SIZE_OK[deal.category];
     const have = (deal.sizes_available || []).map(x => String(x).trim().toUpperCase());
@@ -793,7 +822,8 @@
     if (cap && deal.price > cap) v.push('over ₹' + cap.toLocaleString('en-IN'));
     if (PATTERN_BAN.test(name)) v.push('banned pattern');
     if (deal.category === 'slides' && SLIDE_LOUD.test(name)) v.push('loud slide');
-    if (sizeStatus(deal) === 'missing') v.push('not in your size');
+    if (stockState(deal).state === 'out') v.push('sold out in your size');
+    else if (sizeStatus(deal) === 'missing') v.push('not in your size');
     if (HOT_MONTH && deal.category === 'jacket' && HOT_FABRIC.test(name)) v.push('too warm for now');
     return v;
   }
@@ -846,9 +876,16 @@
     } catch (e) { /* literals above remain in force */ }
   }
 
+  async function loadStock() {
+    try {
+      const r = await fetch('stock.json?t=' + Date.now());
+      if (r.ok) STOCK = (await r.json()).items || {};
+    } catch (e) { /* keep the last stock we had */ }
+  }
+
   async function loadDeals() {
     try {
-      const resp = await fetch('deals.json?t=' + Date.now());
+      const [resp] = await Promise.all([fetch('deals.json?t=' + Date.now()), loadStock()]);
       const data = await resp.json();
       allDeals = data.deals || [];
       updateStats(data);
@@ -880,7 +917,7 @@
 
   function updateBrandChips() {
     let pool = allDeals;
-    if (currentCategory !== 'all') pool = pool.filter(d => d.category === currentCategory);
+    if (currentCategory !== 'all') pool = pool.filter(d => inCategory(d, currentCategory));
     if (currentStore !== 'all') pool = pool.filter(d => d.store === currentStore);
     const brandCounts = {};
     pool.forEach(d => { brandCounts[d.brand] = (brandCounts[d.brand] || 0) + 1; });
@@ -893,20 +930,24 @@
   function renderDeals() {
     updateBrandChips();
     let filtered = allDeals;
-    if (currentCategory !== 'all') filtered = filtered.filter(d => d.category === currentCategory);
+    if (currentCategory !== 'all') filtered = filtered.filter(d => inCategory(d, currentCategory));
     if (currentBrand !== 'all') filtered = filtered.filter(d => d.brand === currentBrand);
     if (currentStore !== 'all') filtered = filtered.filter(d => d.store === currentStore);
     // Hard rules are EXCLUSIONS, not hints — a slim-fit, over-budget or
     // wrong-size item is never a "pick". showBlocked reveals them for browsing.
-    let blocked = 0;
+    let blocked = 0, soldOut = 0;
     if (!showBlocked) {
       const before = filtered.length;
+      soldOut = filtered.filter(d => stockState(d).state === 'out').length;
       filtered = filtered.filter(d => violations(d).length === 0);
       blocked = before - filtered.length;
     }
     if (suitsYouOnly) filtered = filtered.filter(d => getColorMatch(d).level === 'great' && violations(d).length === 0);
-    document.getElementById('blockedNote').textContent =
-      blocked > 0 ? blocked.toLocaleString('en-IN') + ' hidden (break your rules)' : '';
+    const other = blocked - soldOut;
+    document.getElementById('blockedNote').textContent = blocked > 0
+      ? [soldOut ? soldOut.toLocaleString('en-IN') + ' sold out in your size' : '',
+         other ? other.toLocaleString('en-IN') + ' break your rules' : ''].filter(Boolean).join(' · ') + ' — hidden'
+      : '';
 
     switch (currentSort) {
       case 'best':
@@ -967,10 +1008,19 @@
           ${deal.rating > 0 ? `<div class="deal-rating"><span class="stars">${deal.rating.toFixed(1)} \u2605</span><span class="rating-count">${deal.rating_count ? deal.rating_count.toLocaleString() : ''}</span></div>` : ''}
           <a class="deal-buy" href="${deal.store === 'Ajio' ? 'https://www.ajio.com/search/?text=' + encodeURIComponent(deal.brand + ' ' + deal.name) : deal.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Buy on ${deal.store} \u2192</a>
           ${(() => {
+            const line = (color, text) => `<div style="font-size:0.6rem;color:${color};text-align:center;margin-top:0.25rem">${text}</div>`;
+            const sk = stockState(deal);
+            if (sk.state === 'out') return line('#ef4444', 'Sold out in your size');
+            if (sk.state === 'in') {
+              const list = sk.sizes.map(([k, n]) => n === null ? k : `${k} ${n}`).join(' · ');
+              return sk.total !== null && sk.total <= LOW_STOCK
+                ? line('#f59e0b', `Only ${sk.total} left in your size (${list})`)
+                : line('var(--green)', `In stock: ${list}`);
+            }
             const st = sizeStatus(deal);
-            if (st === 'ok') return '<div style="font-size:0.6rem;color:var(--green);text-align:center;margin-top:0.25rem">Size verified</div>';
-            if (st === 'missing') return '<div style="font-size:0.6rem;color:#ef4444;text-align:center;margin-top:0.25rem">Not in your size</div>';
-            return '<div style="font-size:0.6rem;color:var(--dim);text-align:center;margin-top:0.25rem">Check size on site</div>';
+            if (st === 'missing') return line('#ef4444', 'Not in your size');
+            if (deal.store === 'Myntra' && st === 'ok') return line('var(--dim)', 'Size listed · stock not checked yet');
+            return line('var(--dim)', 'Check size on site');
           })()}
         </div>
       </div>`;
@@ -1025,6 +1075,7 @@
           const data = await resp.json();
           if (data.deals && data.deals.length > 0) {
             allDeals = data.deals;
+            await loadStock();
             updateStats(data);
             renderDeals();
             if (data.last_updated) {
@@ -1104,8 +1155,9 @@
     let filtered = COUPONS;
     // Filter by current category if not 'all'
     if (currentCategory !== 'all') {
-      filtered = filtered.filter(c => c.category === 'all' || c.category === currentCategory ||
-        (c.category === 'shoes' && currentCategory === 'slides'));
+      const base = currentCategory.split(':')[0];
+      filtered = filtered.filter(c => c.category === 'all' || c.category === base ||
+        (c.category === 'shoes' && base === 'slides'));
     }
     // Filter by current store if not 'all'
     if (currentStore !== 'all') {

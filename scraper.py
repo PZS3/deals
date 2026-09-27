@@ -555,6 +555,8 @@ WOMEN_KEYWORDS = ['women', 'woman', "women's", 'ladies', 'girls', 'girl', 'bra '
     'kurti', 'saree', 'salwar', 'anarkali', 'lehenga', 'palazzo', 'skirt', 'crop top',
     'maternity', 'nightgown', 'bikini', 'lingerie', ' her ', 'feminine', 'floral dress']
 
+KIDS_RE = re.compile(r"\b(boys?|kids?)\b", re.I)
+
 def is_mens_product(deal):
     """Filter out women's products that slipped through."""
     name = deal.get("name", "").lower()
@@ -564,12 +566,21 @@ def is_mens_product(deal):
     for kw in WOMEN_KEYWORDS:
         if kw in name:
             return False
-    return True
+    return not KIDS_RE.search(name)
 
 # Owner hard rule (profile.json fit_rules.avoid): never slim/skinny/muscle
 # fits — BMI 32.7. Applies to clothing; shoe names use 'slim' differently.
 FIT_BAN_RE = re.compile(r"\b(slim|skinny|muscle\s*fit|extra\s*slim|super\s*slim)\b", re.I)
 TSHIRT_RE = re.compile(r"\bt[\s-]?shirts?\b|\btees?\b|\bpolo\b", re.I)
+SHIRT_RE = re.compile(r"\bshirts?\b", re.I)
+# Myntra names repeat the brand, and "U.S. Polo Assn." tripped TSHIRT_RE's
+# polo: 49 USPA casual shirts were filed as tees (2026-09-27).
+USPA_RE = re.compile(r"u\.?\s*s\.?\s*polo\s*assn\.?", re.I)
+
+# Activewear vs casual tees: shared with the stock stage, which refines it
+# from the product page's fabric/occasion.
+from classify import tee_style
+
 # Ajio labels a product with the category of the SEARCH that found it, so
 # "adidas jacket men" filed Adilette Comfort slides under jacket and a U.S.
 # Polo sandal landed in shirt. The name is the better signal for footwear.
@@ -588,18 +599,29 @@ def deduplicate(deals):
     for d in deals:
         if not is_mens_product(d):
             continue
-        # Ajio files polos/tees under 'shirt' — reclassify so the right
-        # budget cap and tab apply (was 72 mislabeled rows on 2026-07-30).
-        if d.get("category") == "shirt" and TSHIRT_RE.search(d.get("name", "")):
-            d["category"] = "tshirt"
+        # Ajio files polos/tees under 'shirt' (72 rows on 2026-07-30) and
+        # shirts under 'tshirt' — the name decides, so the right budget cap
+        # and tab apply. Also repairs rows kept from earlier runs.
         name = d.get("name", "")
+        if d.get("category") in ("shirt", "tshirt"):
+            bare = USPA_RE.sub("", name)
+            if TSHIRT_RE.search(bare):
+                d["category"] = "tshirt"
+            elif SHIRT_RE.search(bare):
+                d["category"] = "shirt"
         if not APPAREL_RE.search(name):
-            if SLIDES_RE.search(name):
-                d["category"] = "slides"
-            elif d.get("category") not in FOOTWEAR and SHOES_RE.search(name):
+            # A shoe word wins: "Court Slide 4 Tennis Shoes", "Go Walk Flex
+            # Slip-On Shoes" are shoes even when a slides search found them.
+            if SHOES_RE.search(name):
                 d["category"] = "shoes"
+            elif SLIDES_RE.search(name):
+                d["category"] = "slides"
         if d.get("category") not in FOOTWEAR and FIT_BAN_RE.search(d.get("name", "")):
             continue
+        if d.get("category") == "tshirt":
+            d["style"] = tee_style(d)
+        else:
+            d.pop("style", None)
         # Myntra serves http:// image urls — mixed content on https pages.
         img = d.get("image") or ""
         if img.startswith("http://"):
@@ -705,3 +727,9 @@ def run_scraper():
 
 if __name__ == "__main__":
     run_scraper()
+    # Stock is a separate stage: if it fails, deals.json still publishes.
+    try:
+        from check_stock import refresh_stock
+        refresh_stock()
+    except Exception as e:
+        log.error(f"[Stock] refresh failed: {e}")

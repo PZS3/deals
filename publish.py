@@ -52,7 +52,7 @@ from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
-TRACKED = ["deals.json"]
+TRACKED = ["deals.json", "stock.json"]
 
 log = logging.getLogger("publish")
 if not log.handlers:
@@ -90,13 +90,24 @@ def main():
             log.error("TCC is blocking git. See the header of publish.py for the two fixes.")
         return 1
 
-    if not git("diff", "--quiet", "--", *TRACKED, quiet=True).returncode:
-        log.info("deals.json unchanged since last commit — nothing to publish")
+    # stock.json is written by a later, optional stage: publish whatever exists.
+    # `git status` rather than `git diff` so a brand-new (untracked) file counts.
+    files = [p for p in TRACKED if (BASE_DIR / p).exists()]
+    if not files:
+        # An empty pathspec would make status/commit act on the whole repo.
+        log.error("neither %s exists — nothing to publish", " nor ".join(TRACKED))
+        return 1
+    st = git("status", "--porcelain", "--", *files)
+    if st.returncode:
+        return 1
+    if not st.stdout.strip():
+        log.info("%s unchanged since last commit — nothing to publish", ", ".join(files))
         return 0
 
-    git("add", "--", *TRACKED, check=True)
+    git("add", "--", *files, check=True)
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    if git("commit", "-m", f"Update deals {stamp}", check=True).returncode:
+    # Pathspec commit: anything else sitting in the index stays out of it.
+    if git("commit", "-m", f"Update deals {stamp}", "--", *files, check=True).returncode:
         return 1
 
     push = git("push", "origin", "main")
