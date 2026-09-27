@@ -61,7 +61,8 @@
     "Fila",
     "FILA",
     "Champion",
-    "Converse"
+    "Converse",
+    "Crocs"
   ],
   "categories": {
     "tshirt": {
@@ -147,6 +148,19 @@
       "size": "XL",
       "max_price": 2000,
       "min_discount_pct": 30
+    },
+    "slides": {
+      "keywords": [
+        "slides",
+        "sliders",
+        "flip flops",
+        "sandals",
+        "clogs",
+        "floaters"
+      ],
+      "size": "10",
+      "max_price": 5000,
+      "min_discount_pct": 20
     }
   },
   "min_rating": 4.0,

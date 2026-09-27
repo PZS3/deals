@@ -225,6 +225,8 @@ def scrape_ajio(config):
         "trackpant": ["puma track pants men", "adidas joggers men", "nike track pants men", "reebok joggers men"],
         "shoes": ["puma shoes men", "adidas shoes men", "asics shoes men", "nike shoes men",
                    "reebok shoes men", "skechers shoes men", "new balance shoes men", "under armour shoes men"],
+        "slides": ["skechers slides men", "adidas slides men", "crocs men", "puma slides men",
+                    "nike slides men", "reebok slides men", "under armour slides men"],
     }
 
     for cat_key, cat_conf in config["categories"].items():
@@ -379,27 +381,29 @@ def scrape_myntra(config):
     # Myntra works best with standard requests (curl-cffi gets empty products)
     session = get_session(config)
 
+    SLIDE_BRANDS = "Skechers%2CADIDAS%2CPuma%2CNike%2CReebok%2CCrocs%2CUNDER+ARMOUR"
+
     # Myntra search URLs — sorted by discount, multiple brand groups, deep pagination
     search_urls = {
         "tshirt": [
-            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPUMA%2CAdidas%2CUnder+Armour%2CASICS%2CU.S.+Polo+Assn.&sort=discount",
-            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPUMA%2CAdidas%2CUnder+Armour%2CASICS%2CU.S.+Polo+Assn.&sort=discount&p=2",
-            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPUMA%2CAdidas%2CUnder+Armour%2CASICS%2CU.S.+Polo+Assn.&sort=discount&p=3",
-            "https://www.myntra.com/men-tshirts?f=Brand%3ANike%2CReebok%2CLevi%2527s%2CTommy+Hilfiger%2CHRX+by+Hrithik+Roshan%2CJack+%26+Jones&sort=discount",
-            "https://www.myntra.com/men-tshirts?f=Brand%3ANike%2CReebok%2CLevi%2527s%2CTommy+Hilfiger%2CHRX+by+Hrithik+Roshan%2CJack+%26+Jones&sort=discount&p=2",
-            "https://www.myntra.com/men-tshirts?f=Brand%3ASuperdry%2CRoadster%2CH%26M%2CMast+%26+Harbour%2CCalvin+Klein&sort=discount",
-            "https://www.myntra.com/men-tshirts?f=Brand%3ASuperdry%2CRoadster%2CH%26M%2CMast+%26+Harbour%2CCalvin+Klein&sort=discount&p=2",
+            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CU.S.+Polo+Assn.&sort=discount",
+            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CU.S.+Polo+Assn.&sort=discount&p=2",
+            "https://www.myntra.com/men-tshirts?f=Brand%3AAllen+Solly%2CPuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CU.S.+Polo+Assn.&sort=discount&p=3",
+            "https://www.myntra.com/men-tshirts?f=Brand%3ANike%2CReebok%2CLevis%2CTommy+Hilfiger%2CHRX+by+Hrithik+Roshan%2CJack+%26+Jones&sort=discount",
+            "https://www.myntra.com/men-tshirts?f=Brand%3ANike%2CReebok%2CLevis%2CTommy+Hilfiger%2CHRX+by+Hrithik+Roshan%2CJack+%26+Jones&sort=discount&p=2",
+            "https://www.myntra.com/men-tshirts?f=Brand%3ASuperdry%2CRoadster%2CH%26M%2CMast+%26+Harbour%2CCalvin+Klein%2CCalvin+Klein+Jeans&sort=discount",
+            "https://www.myntra.com/men-tshirts?f=Brand%3ASuperdry%2CRoadster%2CH%26M%2CMast+%26+Harbour%2CCalvin+Klein%2CCalvin+Klein+Jeans&sort=discount&p=2",
         ],
         "shirt": [
             # Group 1: US Polo, Allen Solly, Levi's, Tommy
-            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevi%2527s%2CTommy+Hilfiger&sort=discount",
-            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevi%2527s%2CTommy+Hilfiger&sort=discount&p=2",
-            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevi%2527s%2CTommy+Hilfiger&sort=discount&p=3",
-            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevi%2527s%2CTommy+Hilfiger&sort=discount&p=4",
+            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevis%2CTommy+Hilfiger&sort=discount",
+            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevis%2CTommy+Hilfiger&sort=discount&p=2",
+            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevis%2CTommy+Hilfiger&sort=discount&p=3",
+            "https://www.myntra.com/men-shirts?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CLevis%2CTommy+Hilfiger&sort=discount&p=4",
             # Group 2: Jack & Jones, Roadster, H&M, Superdry, Calvin Klein
-            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CMast+%26+Harbour&sort=discount",
-            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CMast+%26+Harbour&sort=discount&p=2",
-            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CMast+%26+Harbour&sort=discount&p=3",
+            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CMast+%26+Harbour&sort=discount",
+            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CMast+%26+Harbour&sort=discount&p=2",
+            "https://www.myntra.com/men-shirts?f=Brand%3AJack+%26+Jones%2CRoadster%2CH%26M%2CSuperdry%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CMast+%26+Harbour&sort=discount&p=3",
             # Group 3: Van Heusen, Arrow, Peter England, Louis Philippe, Indian Terrain
             "https://www.myntra.com/men-shirts?f=Brand%3AVan+Heusen%2CArrow%2CPeter+England%2CLouis+Philippe%2CIndian+Terrain&sort=discount",
             "https://www.myntra.com/men-shirts?f=Brand%3AVan+Heusen%2CArrow%2CPeter+England%2CLouis+Philippe%2CIndian+Terrain&sort=discount&p=2",
@@ -410,11 +414,11 @@ def scrape_myntra(config):
             "https://www.myntra.com/men-shirts?f=Brand%3AWrangler%2CPepe+Jeans%2CGAP%2CUnited+Colors+of+Benetton%2CMarks+%26+Spencer%2CCelio&sort=discount&p=2",
             "https://www.myntra.com/men-shirts?f=Brand%3AWrangler%2CPepe+Jeans%2CGAP%2CUnited+Colors+of+Benetton%2CMarks+%26+Spencer%2CCelio&sort=discount&p=3",
             # Group 5: Puma, Adidas, Under Armour, Flying Machine, Selected Homme
-            "https://www.myntra.com/men-shirts?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CFlying+Machine%2CSELECTED&sort=discount",
-            "https://www.myntra.com/men-shirts?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CFlying+Machine%2CSELECTED&sort=discount&p=2",
+            "https://www.myntra.com/men-shirts?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CFlying+Machine%2CSELECTED&sort=discount",
+            "https://www.myntra.com/men-shirts?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CFlying+Machine%2CSELECTED&sort=discount&p=2",
             # Group 6: Party/Occasion wear — premium brands
-            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount",
-            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount&p=2",
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount",
+            "https://www.myntra.com/men-party-shirts?f=Brand%3AJack+%26+Jones%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CTommy+Hilfiger%2CSuperdry%2CSELECTED&sort=discount&p=2",
             "https://www.myntra.com/men-party-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CAllen+Solly%2CIndian+Terrain&sort=discount",
             "https://www.myntra.com/men-party-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CAllen+Solly%2CIndian+Terrain&sort=discount&p=2",
             # Group 7: Formal shirts
@@ -422,40 +426,52 @@ def scrape_myntra(config):
             "https://www.myntra.com/men-formal-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CPeter+England%2CAllen+Solly&sort=discount&p=2",
             "https://www.myntra.com/men-formal-shirts?f=Brand%3AVan+Heusen%2CLouis+Philippe%2CArrow%2CPeter+England%2CAllen+Solly&sort=discount&p=3",
             # Group 8: Printed/designer shirts
-            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein&sort=discount",
-            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein&sort=discount&p=2",
+            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein%2CCalvin+Klein+Jeans&sort=discount",
+            "https://www.myntra.com/men-printed-shirts?f=Brand%3AJack+%26+Jones%2CSuperdry%2CMarks+%26+Spencer%2CPepe+Jeans%2CCalvin+Klein%2CCalvin+Klein+Jeans&sort=discount&p=2",
             # Group 9: Linen shirts (premium, wedding-worthy)
             "https://www.myntra.com/men-linen-shirts?f=Brand%3AMarks+%26+Spencer%2CAllen+Solly%2CVan+Heusen%2CLouis+Philippe%2CIndian+Terrain%2CJack+%26+Jones&sort=discount",
             "https://www.myntra.com/men-linen-shirts?f=Brand%3AMarks+%26+Spencer%2CAllen+Solly%2CVan+Heusen%2CLouis+Philippe%2CIndian+Terrain%2CJack+%26+Jones&sort=discount&p=2",
         ],
         "jeans": [
-            "https://www.myntra.com/men-jeans?f=Brand%3ALevi%2527s%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount",
-            "https://www.myntra.com/men-jeans?f=Brand%3ALevi%2527s%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount&p=2",
-            "https://www.myntra.com/men-jeans?f=Brand%3ALevi%2527s%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount&p=3",
+            "https://www.myntra.com/men-jeans?f=Brand%3ALevis%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount",
+            "https://www.myntra.com/men-jeans?f=Brand%3ALevis%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount&p=2",
+            "https://www.myntra.com/men-jeans?f=Brand%3ALevis%2CU.S.+Polo+Assn.%2CAllen+Solly%2CJack+%26+Jones%2CRoadster%2CH%26M&sort=discount&p=3",
         ],
         "trousers": [
-            "https://www.myntra.com/men-trousers?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CTommy+Hilfiger%2CCalvin+Klein%2CJack+%26+Jones%2CLevi%2527s&sort=discount",
-            "https://www.myntra.com/men-trousers?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CTommy+Hilfiger%2CCalvin+Klein%2CJack+%26+Jones%2CLevi%2527s&sort=discount&p=2",
+            "https://www.myntra.com/men-trousers?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CTommy+Hilfiger%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CJack+%26+Jones%2CLevis&sort=discount",
+            "https://www.myntra.com/men-trousers?f=Brand%3AAllen+Solly%2CU.S.+Polo+Assn.%2CTommy+Hilfiger%2CCalvin+Klein%2CCalvin+Klein+Jeans%2CJack+%26+Jones%2CLevis&sort=discount&p=2",
             "https://www.myntra.com/men-trousers?f=Brand%3ARoadster%2CH%26M%2CMast+%26+Harbour%2CSuperdry%2CHRX+by+Hrithik+Roshan&sort=discount",
         ],
         "shorts": [
-            "https://www.myntra.com/men-shorts?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CU.S.+Polo+Assn.%2CRoadster&sort=discount",
-            "https://www.myntra.com/men-shorts?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CU.S.+Polo+Assn.%2CRoadster&sort=discount&p=2",
+            "https://www.myntra.com/men-shorts?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CU.S.+Polo+Assn.%2CRoadster&sort=discount",
+            "https://www.myntra.com/men-shorts?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CU.S.+Polo+Assn.%2CRoadster&sort=discount&p=2",
         ],
         "jacket": [
-            "https://www.myntra.com/men-jackets?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount",
-            "https://www.myntra.com/men-jackets?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount&p=2",
+            "https://www.myntra.com/men-jackets?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount",
+            "https://www.myntra.com/men-jackets?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CU.S.+Polo+Assn.%2CAllen+Solly%2CTommy+Hilfiger%2CSuperdry&sort=discount&p=2",
         ],
         "trackpant": [
-            "https://www.myntra.com/men-track-pants?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUnder+Armour%2CASICS&sort=discount",
-            "https://www.myntra.com/men-track-pants?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUnder+Armour%2CASICS&sort=discount&p=2",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=2",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=3",
+            "https://www.myntra.com/men-track-pants?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CHRX+by+Hrithik+Roshan%2CUNDER+ARMOUR%2CASICS&sort=discount&p=4",
         ],
         "shoes": [
-            "https://www.myntra.com/men-sports-shoes?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount",
-            "https://www.myntra.com/men-sports-shoes?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=2",
-            "https://www.myntra.com/men-sports-shoes?f=Brand%3APUMA%2CAdidas%2CUnder+Armour%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=3",
-            "https://www.myntra.com/men-casual-shoes?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount",
-            "https://www.myntra.com/men-casual-shoes?f=Brand%3APUMA%2CAdidas%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=2",
+            "https://www.myntra.com/men-sports-shoes?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount",
+            "https://www.myntra.com/men-sports-shoes?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=2",
+            "https://www.myntra.com/men-sports-shoes?f=Brand%3APuma%2CADIDAS%2CUNDER+ARMOUR%2CASICS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=3",
+            "https://www.myntra.com/men-casual-shoes?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount",
+            "https://www.myntra.com/men-casual-shoes?f=Brand%3APuma%2CADIDAS%2CNike%2CReebok%2CSkechers%2CNew+Balance&sort=discount&p=2",
+        ],
+        # Every page, not just the top-discount ones: the comfort models
+        # (Adilette Comfort, Skechers Arch Fit, Crocs) rarely lead a discount
+        # sort. men-flip-flops had 311 listings on 2026-09-27 = 7 pages.
+        "slides": [
+            f"https://www.myntra.com/men-flip-flops?f=Brand%3A{SLIDE_BRANDS}&sort=discount&p={p}"
+            for p in range(1, 8)
+        ] + [
+            f"https://www.myntra.com/men-sandals?f=Brand%3A{SLIDE_BRANDS}&sort=discount&p={p}"
+            for p in range(1, 4)
         ],
     }
 
@@ -550,6 +566,16 @@ def is_mens_product(deal):
 # fits — BMI 32.7. Applies to clothing; shoe names use 'slim' differently.
 FIT_BAN_RE = re.compile(r"\b(slim|skinny|muscle\s*fit|extra\s*slim|super\s*slim)\b", re.I)
 TSHIRT_RE = re.compile(r"\bt[\s-]?shirts?\b|\btees?\b|\bpolo\b", re.I)
+# Ajio labels a product with the category of the SEARCH that found it, so
+# "adidas jacket men" filed Adilette Comfort slides under jacket and a U.S.
+# Polo sandal landed in shirt. The name is the better signal for footwear.
+# No "boot": it would pull "Boot Cut" jeans into shoes.
+SLIDES_RE = re.compile(r"\b(slides?|sliders?|flip[\s-]?flops?|sandals?|slippers?|clogs?|floaters?)\b", re.I)
+SHOES_RE = re.compile(r"\b(shoes?|sneakers?)\b", re.I)
+# Garment words win: "Sneaker Print Regular Fit T-Shirt" is a tee.
+APPAREL_RE = re.compile(r"\b(t[\s-]?shirts?|tees?|shirts?|polos?|jackets?|shorts|trousers|jeans|"
+                        r"joggers|track\s*pants?|hoodies?|sweatshirts?)\b", re.I)
+FOOTWEAR = {"shoes", "slides"}
 
 def deduplicate(deals):
     seen = set()
@@ -562,7 +588,13 @@ def deduplicate(deals):
         # budget cap and tab apply (was 72 mislabeled rows on 2026-07-30).
         if d.get("category") == "shirt" and TSHIRT_RE.search(d.get("name", "")):
             d["category"] = "tshirt"
-        if d.get("category") != "shoes" and FIT_BAN_RE.search(d.get("name", "")):
+        name = d.get("name", "")
+        if not APPAREL_RE.search(name):
+            if SLIDES_RE.search(name):
+                d["category"] = "slides"
+            elif d.get("category") not in FOOTWEAR and SHOES_RE.search(name):
+                d["category"] = "shoes"
+        if d.get("category") not in FOOTWEAR and FIT_BAN_RE.search(d.get("name", "")):
             continue
         # Myntra serves http:// image urls — mixed content on https pages.
         img = d.get("image") or ""
