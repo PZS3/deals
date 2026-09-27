@@ -479,6 +479,20 @@ def scrape_myntra(config):
         ],
     }
 
+    # Discount-sorted pages are mostly old clearance stock (median product id
+    # 33M vs 46M for Myntra's newest tees on 2026-09-27), yet 46 of the 50
+    # newest tees were 30%+ off too. So every filter group is also read
+    # newest-first (2 pages) and by popularity (1 page).
+    for cat, urls in search_urls.items():
+        extra = []
+        for u in urls:
+            if "sort=discount" in u and not re.search(r"&p=([2-9]|\d\d)", u):
+                base = re.sub(r"&p=1$", "", u)
+                extra += [base.replace("sort=discount", "sort=new"),
+                          base.replace("sort=discount", "sort=new") + "&p=2",
+                          base.replace("sort=discount", "sort=popularity")]
+        search_urls[cat] = urls + extra
+
     for cat_key, cat_conf in config["categories"].items():
         for url in search_urls.get(cat_key, []):
             try:
@@ -680,6 +694,12 @@ def run_scraper():
             # cap has to be explicit.
             cutoff = datetime.now() - timedelta(days=MAX_KEEP_DAYS)
             new_ids = {d["id"] for d in all_deals}
+            # first_seen survives re-scrapes. Rows from before the field
+            # existed stay None: their real first sighting is unknown, and
+            # back-filling from scraped_at would badge them all NEW.
+            first = {d["id"]: d.get("first_seen") for d in existing_deals}
+            for d in all_deals:
+                d["first_seen"] = first[d["id"]] if d["id"] in first else d["scraped_at"]
             kept, expired = [], 0
             for d in existing_deals:
                 if d["id"] in new_ids:

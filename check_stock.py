@@ -42,6 +42,13 @@ MARKER = "window.__myx ="
 _decoder = json.JSONDecoder()
 
 
+def _to_int(v):
+    try:
+        return int(float(str(v).replace(",", ""))) if v not in (None, "") else None
+    except ValueError:
+        return None
+
+
 _WAIST = re.compile(r"^W(\d+)(?:/L\d+)?$|^(\d+)W$")
 
 
@@ -87,6 +94,11 @@ def check_one(deal_id, url, want=("XL", "XXL"), timeout=25):
     except Exception as e:
         out["note"] = f"JSON parse failed: {type(e).__name__}"
         return deal_id, out
+
+    # Live price: search listings go stale, and deals.json carries rows
+    # forward for days after they drop out of search (apply_live_prices).
+    pr = (data.get("pdpData") or {}).get("price") or {}
+    out["price"], out["mrp"] = _to_int(pr.get("discounted")), _to_int(pr.get("mrp"))
 
     # Store attributes the tee classifier uses (classify.tee_style).
     aa = (data.get("pdpData") or {}).get("articleAttributes") or {}
@@ -185,6 +197,9 @@ def check_ajio(deal_id, url, want):
     if not mine:
         out["note"] = f"search returned {len(ents)} products, none is this one"
         return deal_id, out
+    pv, wv = mine[0].get("price"), mine[0].get("wasPriceData")
+    out["price"] = _to_int(pv.get("value") if isinstance(pv, dict) else pv)
+    out["mrp"] = _to_int(wv.get("value") if isinstance(wv, dict) else wv) or out["price"]
     facets = ((state.get("facets") or {}).get("currentFacets") or {}).get("entities") or {}
     counts = {norm_size(k.split("-", 1)[1]): (v.get("count") or 0) for k, v in facets.items()
               if k.startswith("verticalsizegroupformat-") and (v.get("count") or 0) > 0}
@@ -249,12 +264,14 @@ def refresh_stock(deals_path=BASE_DIR / "deals.json", config_path=BASE_DIR / "co
     # re-filing a deal (tee -> shirt) changes which sizes count as his.
     def usable(d, age):
         rec = items.get(d["id"])
-        return bool(rec and rec.get("ok") is not None
+        return bool(rec and rec.get("ok") is not None and rec.get("price")
                     and rec.get("category") == d["category"] and fresh(rec, age))
 
     # Tee records also carry the store's attributes and the refined style.
     def record(d, rec, r):
         rec["category"] = d["category"]
+        if r.get("price"):
+            rec["price"], rec["mrp"] = r["price"], r.get("mrp") or r["price"]
         if d["category"] == "tshirt":
             rec["attrs"] = r.get("attrs") or {}
             rec["style"] = tee_style(d, rec["attrs"])
@@ -337,7 +354,51 @@ def refresh_stock(deals_path=BASE_DIR / "deals.json", config_path=BASE_DIR / "co
 
     states = Counter({True: "in", False: "sold_out", None: "unknown"}[v.get("ok")] for v in items.values())
     log.info(f"[Stock] checked {checked}, kept last good {kept_old}; records: {dict(states)}")
+    apply_live_prices(deals_path, config_path, items)
     return out
+
+
+def apply_live_prices(deals_path, config_path, items, max_age=timedelta(hours=30)):
+    """Write each deal's live price into deals.json; drop deals no longer on sale.
+
+    A row keeps the price it had when it was last in search results, and the
+    scraper carries rows forward for days after that — typically because the
+    item sold out or its sale ended (on 2026-09-27, 1,306 of 3,224 rows).
+    The stock stage has just read the real price off the product page / the
+    one-product Ajio search, so it overrides. The same min-discount and
+    budget rules as the scraper then decide whether it is still a deal.
+    """
+    data = json.load(open(deals_path))
+    cats = json.load(open(config_path))["categories"]
+    now = datetime.now()
+    changed = dropped = 0
+    keep = []
+    for d in data.get("deals", []):
+        rec = items.get(d["id"])
+        try:
+            recent = rec and now - datetime.fromisoformat(rec["checked_at"]) < max_age
+        except (KeyError, TypeError, ValueError):
+            recent = False
+        if recent and rec.get("price") and rec.get("category") == d["category"]:
+            price, mrp = rec["price"], max(rec.get("mrp") or 0, rec["price"])
+            if (price, mrp) != (d.get("price"), d.get("mrp")):
+                changed += 1
+            d["price"], d["mrp"] = price, mrp
+            d["discount_pct"] = int((mrp - price) * 100 / mrp) if mrp else 0
+            d["price_checked_at"] = rec["checked_at"]
+            conf = cats.get(d["category"]) or {}
+            if d["discount_pct"] < conf.get("min_discount_pct", 30) or price > conf.get("max_price", 10 ** 9):
+                dropped += 1
+                continue
+        keep.append(d)
+    data["deals"] = keep
+    data["total_deals"] = len(keep)
+    data["prices_checked_at"] = now.isoformat(timespec="seconds")
+    tmp = Path(deals_path).with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    os.replace(tmp, deals_path)
+    log.info(f"[Prices] {changed} prices changed; {dropped} deals no longer on sale dropped; {len(keep)} left")
 
 
 if __name__ == "__main__":

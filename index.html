@@ -333,6 +333,18 @@
   }
   .deal-card:hover .deal-img { transform: scale(1.04); }
 
+  .new-badge {
+    position: absolute;
+    top: 2.1rem;
+    left: 0.5rem;
+    background: var(--green);
+    color: #000;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+  }
   .discount-badge {
     position: absolute;
     top: 0.5rem;
@@ -563,6 +575,7 @@
     <option value="price-asc">Price: Low-High</option>
     <option value="price-desc">Price: High-Low</option>
     <option value="rating">Rating</option>
+    <option value="new">Newest first</option>
   </select>
   <button class="suits-btn" id="suitsBtn" onclick="toggleSuitsYou()">Suits You</button>
   <button class="suits-btn" id="blockedBtn" onclick="toggleShowBlocked()">Rule-breakers hidden</button>
@@ -780,6 +793,15 @@
   // unknown. Ajio (counts:false) is a ~1-day rolling window, so it gets
   // about two cycles; Myntra is re-checked every run.
   const LOW_STOCK = 5;
+  // First appeared in the last 48h (first_seen is kept across re-scrapes).
+  function isNew(deal) {
+    return !!deal.first_seen && Date.now() - new Date(deal.first_seen).getTime() < 48 * 3600 * 1000;
+  }
+  // Myntra product ids rise over time; a tiebreak for "Newest first".
+  function productNum(deal) {
+    const m = /\/(\d{6,})\/buy/.exec(deal.url || '');
+    return m && deal.store === 'Myntra' ? Number(m[1]) : 0;
+  }
   function stockState(deal) {
     const s = STOCK[deal.id];
     if (!s || s.ok === null || s.ok === undefined) return { state: 'unknown' };
@@ -962,6 +984,8 @@
       case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
       case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
       case 'rating': filtered.sort((a, b) => b.rating - a.rating); break;
+      case 'new': filtered.sort((a, b) => (b.first_seen || '').localeCompare(a.first_seen || '')
+                                         || productNum(b) - productNum(a)); break;
     }
 
     const grid = document.getElementById('dealsGrid');
@@ -993,6 +1017,7 @@
             <div style="font-size:0.7rem;color:var(--dim)">Tap to view product</div>
           </div>
           <div class="discount-badge">${deal.discount_pct}% OFF</div>
+          ${isNew(deal) ? '<div class="new-badge">NEW</div>' : ''}
           <div class="store-tag ${deal.store.toLowerCase()}">${deal.store}</div>
           ${colorBadge}
           ${dupBadge}
