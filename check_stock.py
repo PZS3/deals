@@ -262,9 +262,9 @@ def refresh_stock(deals_path=BASE_DIR / "deals.json", config_path=BASE_DIR / "co
 
     # A record is only trusted for the category it was checked against:
     # re-filing a deal (tee -> shirt) changes which sizes count as his.
-    def usable(d, age):
+    def usable(d, age, need_price=True):
         rec = items.get(d["id"])
-        return bool(rec and rec.get("ok") is not None and rec.get("price")
+        return bool(rec and rec.get("ok") is not None and (rec.get("price") or not need_price)
                     and rec.get("category") == d["category"] and fresh(rec, age))
 
     # Tee records also carry the store's attributes and the refined style.
@@ -302,7 +302,7 @@ def refresh_stock(deals_path=BASE_DIR / "deals.json", config_path=BASE_DIR / "co
             mine = {k: v for k, v in r["sizes"].items() if k in want}
             if r["ok"] is None:
                 unknown += 1
-                if usable(d, KEEP_LAST_GOOD):
+                if usable(d, KEEP_LAST_GOOD, need_price=False):
                     kept_old += 1
                     continue
             items[d["id"]] = record(d, {"ok": r["ok"], "sizes": mine, "checked_at": stamp, "note": r["note"]}, r)
@@ -337,7 +337,7 @@ def refresh_stock(deals_path=BASE_DIR / "deals.json", config_path=BASE_DIR / "co
             if streak >= 10:
                 log.error(f"[Stock] 10 inconclusive Ajio checks in a row ({r['note']}) — stopping")
                 break
-            if usable(d, KEEP_LAST_GOOD):
+            if usable(d, KEEP_LAST_GOOD, need_price=False):
                 continue
         else:
             streak = 0
@@ -379,12 +379,25 @@ def apply_live_prices(deals_path, config_path, items, max_age=timedelta(hours=30
             recent = rec and now - datetime.fromisoformat(rec["checked_at"]) < max_age
         except (KeyError, TypeError, ValueError):
             recent = False
-        if recent and rec.get("price") and rec.get("category") == d["category"]:
+        # Only a reading taken after the row was scraped is newer: for Ajio
+        # both come from the same search data, and a still-fresh record from
+        # an earlier run must not undo this run's scraped price.
+        try:
+            scraped = datetime.fromisoformat(d["scraped_at"])
+        except (TypeError, KeyError, ValueError):
+            scraped = datetime.min          # price of unknown age: a live reading wins
+        try:
+            newer = datetime.fromisoformat(rec["checked_at"]) >= scraped
+        except (TypeError, KeyError, ValueError):
+            newer = False
+        if recent and newer and rec.get("price") and rec.get("category") == d["category"]:
             price, mrp = rec["price"], max(rec.get("mrp") or 0, rec["price"])
             if (price, mrp) != (d.get("price"), d.get("mrp")):
                 changed += 1
+                # Rounded like the stores' own discount figure (Ajio's
+                # discountPercent), so a listed 30% doesn't become 29.
+                d["discount_pct"] = round((mrp - price) * 100 / mrp) if mrp else 0
             d["price"], d["mrp"] = price, mrp
-            d["discount_pct"] = int((mrp - price) * 100 / mrp) if mrp else 0
             d["price_checked_at"] = rec["checked_at"]
             conf = cats.get(d["category"]) or {}
             if d["discount_pct"] < conf.get("min_discount_pct", 30) or price > conf.get("max_price", 10 ** 9):

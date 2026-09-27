@@ -794,8 +794,14 @@
   // about two cycles; Myntra is re-checked every run.
   const LOW_STOCK = 5;
   // First appeared in the last 48h (first_seen is kept across re-scrapes).
+  // Myntra: also a recently listed product — the popularity pages bring in
+  // years-old bestsellers that are new to us but not new.
+  let pidFor = null, maxPid = 0;
   function isNew(deal) {
-    return !!deal.first_seen && Date.now() - new Date(deal.first_seen).getTime() < 48 * 3600 * 1000;
+    if (!deal.first_seen || !(Date.now() - new Date(deal.first_seen).getTime() < 48 * 3600 * 1000)) return false;
+    if (deal.store !== 'Myntra') return true;
+    if (pidFor !== allDeals) { pidFor = allDeals; maxPid = allDeals.reduce((m, d) => Math.max(m, productNum(d)), 0); }
+    return productNum(deal) >= maxPid - 3e6;
   }
   // Myntra product ids rise over time; a tiebreak for "Newest first".
   function productNum(deal) {

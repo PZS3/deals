@@ -5,3 +5,4 @@ scraper.log
 test_color.py
 .vercel
 server.log
+first_seen.json

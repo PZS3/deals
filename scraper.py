@@ -489,9 +489,11 @@ def scrape_myntra(config):
             if "sort=discount" in u and not re.search(r"&p=([2-9]|\d\d)", u):
                 base = re.sub(r"&p=1$", "", u)
                 extra += [base.replace("sort=discount", "sort=new"),
-                          base.replace("sort=discount", "sort=new") + "&p=2",
                           base.replace("sort=discount", "sort=popularity")]
-        search_urls[cat] = urls + extra
+        # The server-rendered page holds only the first 50 results whatever
+        # &p= says (p=2 returned p=1's exact list, checked 2026-09-27), so
+        # later pages were duplicate requests.
+        search_urls[cat] = [u for u in urls if not re.search(r"&p=([2-9]|\d\d)", u)] + extra
 
     for cat_key, cat_conf in config["categories"].items():
         for url in search_urls.get(cat_key, []):
@@ -565,11 +567,13 @@ def scrape_myntra(config):
 # ============================================================
 # MAIN
 # ============================================================
-WOMEN_KEYWORDS = ['women', 'woman', "women's", 'ladies', 'girls', 'girl', 'bra ', ' bra', 'legging',
+WOMEN_KEYWORDS = ['women', 'woman', "women's", 'ladies', 'girls', 'girl', 'legging',
     'kurti', 'saree', 'salwar', 'anarkali', 'lehenga', 'palazzo', 'skirt', 'crop top',
     'maternity', 'nightgown', 'bikini', 'lingerie', ' her ', 'feminine', 'floral dress']
 
-KIDS_RE = re.compile(r"\b(boys?|kids?)\b", re.I)
+# Whole words only: a substring " bra" matched " brand" and threw out every
+# "Brand Logo" product (about half of Myntra's newest tees, 2026-09-27).
+KIDS_RE = re.compile(r"\b(boys?|kids?|bras?)\b", re.I)
 
 def is_mens_product(deal):
     """Filter out women's products that slipped through."""
@@ -661,8 +665,35 @@ def deduplicate(deals):
     return unique
 
 
+FIRST_SEEN_PATH = BASE_DIR / "first_seen.json"
+
+
+def load_first_seen():
+    """id -> first time any run saw it. Outlives deals.json rows, which get
+    dropped (sale ended, sold out, 7 days out of search) and would otherwise
+    come back badged NEW."""
+    try:
+        return json.load(open(FIRST_SEEN_PATH))
+    except (OSError, ValueError):
+        return {}
+
+
+def save_first_seen(new):
+    seen = load_first_seen()
+    added = {k: v for k, v in new.items() if k not in seen}
+    if added:
+        seen.update(added)
+        tmp = FIRST_SEEN_PATH.with_suffix(".json.tmp")
+        with open(tmp, "w") as f:
+            json.dump(seen, f, separators=(",", ":"))
+        os.replace(tmp, FIRST_SEEN_PATH)
+
+
 def run_scraper():
     config = load_config()
+    # One stamp for the whole run, so "Newest first" can tie-break a run's
+    # new rows by product id instead of by crawl order.
+    run_at = datetime.now().isoformat(timespec="seconds")
     all_deals = []
 
     # Myntra FIRST — preferred store (faster delivery in Vijayawada)
@@ -698,8 +729,10 @@ def run_scraper():
             # existed stay None: their real first sighting is unknown, and
             # back-filling from scraped_at would badge them all NEW.
             first = {d["id"]: d.get("first_seen") for d in existing_deals}
+            first.update(load_first_seen())
             for d in all_deals:
-                d["first_seen"] = first[d["id"]] if d["id"] in first else d["scraped_at"]
+                d["first_seen"] = first[d["id"]] if d["id"] in first else run_at
+            save_first_seen({d["id"]: d["first_seen"] for d in all_deals if d.get("first_seen")})
             kept, expired = [], 0
             for d in existing_deals:
                 if d["id"] in new_ids:
